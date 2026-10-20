@@ -623,9 +623,9 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
   const directBookingsCount = bookings.filter((b) => b.channel === 'direct').length;
 
   // Add-on revenue breakdown
-  const addonLateCheckoutRev = bookings.filter((b) => b.addOns.lateCheckout).length * 120;
-  const addonAirportRev = bookings.filter((b) => b.addOns.airportPickup).length * 450;
-  const addonBreakfastRev = bookings.filter((b) => b.addOns.breakfast).length * 300;
+  const addonLateCheckoutRev = bookings.filter((b) => b.addOns?.lateCheckout).length * 120;
+  const addonAirportRev = bookings.filter((b) => b.addOns?.airportPickup).length * 450;
+  const addonBreakfastRev = bookings.filter((b) => b.addOns?.breakfast).length * 300;
   const totalAddonProfit = addonLateCheckoutRev + addonAirportRev + addonBreakfastRev;
 
   // Handler for Channel Sync
@@ -1454,7 +1454,7 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
                   </p>
                   <div className="pt-2 border-t border-slate-200 flex justify-between text-[11px]">
                     <span className="text-slate-600">Total Booked:</span>
-                    <span className="font-bold text-slate-900">{bookings.filter((b) => b.addOns.lateCheckout).length} orders (R{addonLateCheckoutRev})</span>
+                    <span className="font-bold text-slate-900">{bookings.filter((b) => b.addOns?.lateCheckout).length} orders (R{addonLateCheckoutRev})</span>
                   </div>
                 </div>
 
@@ -1468,7 +1468,7 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
                   </p>
                   <div className="pt-2 border-t border-slate-200 flex justify-between text-[11px]">
                     <span className="text-slate-600">Total Booked:</span>
-                    <span className="font-bold text-slate-900">{bookings.filter((b) => b.addOns.airportPickup).length} orders (R{addonAirportRev})</span>
+                    <span className="font-bold text-slate-900">{bookings.filter((b) => b.addOns?.airportPickup).length} orders (R{addonAirportRev})</span>
                   </div>
                 </div>
 
@@ -1482,7 +1482,7 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
                   </p>
                   <div className="pt-2 border-t border-slate-200 flex justify-between text-[11px]">
                     <span className="text-slate-600">Total Booked:</span>
-                    <span className="font-bold text-slate-900">{bookings.filter((b) => b.addOns.breakfast).length} orders (R{addonBreakfastRev})</span>
+                    <span className="font-bold text-slate-900">{bookings.filter((b) => b.addOns?.breakfast).length} orders (R{addonBreakfastRev})</span>
                   </div>
                 </div>
               </div>

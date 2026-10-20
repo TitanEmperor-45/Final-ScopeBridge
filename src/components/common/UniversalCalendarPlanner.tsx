@@ -1961,7 +1961,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                         {item.startDate} → {item.endDate} ({item.startTime})
                       </span>
                       <span>·</span>
-                      <span>Synced Channels: {item.syncedChannels.map((c) => c.toUpperCase()).join(', ')}</span>
+                      <span>Synced Channels: {(item.syncedChannels || ['direct']).map((c) => (c || '').toUpperCase()).join(', ')}</span>
                     </div>
                   </div>
 
@@ -2137,7 +2137,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                       <p className="text-[11px] text-slate-500">
                         Registered Channels ({uChannels.length}):{' '}
                         <span className="font-semibold text-slate-700">
-                          {uChannels.map((c) => c.toUpperCase()).join(' · ')}
+                          {(uChannels || ['direct']).map((c) => (c || '').toUpperCase()).join(' · ')}
                         </span>
                       </p>
                     </div>
@@ -2268,12 +2268,12 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                               />
                             ) : (
                               <div className="w-9 h-9 rounded-lg bg-emerald-100 text-emerald-800 font-black flex items-center justify-center text-xs">
-                                {b.guestName.slice(0, 2).toUpperCase()}
+                                {(b.guestName || 'Guest').slice(0, 2).toUpperCase()}
                               </div>
                             )}
                             <div>
-                              <span className="font-extrabold text-slate-900 block">{b.guestName}</span>
-                              <span className="text-[10px] text-slate-500 font-mono">ID: {b.id}</span>
+                              <span className="font-extrabold text-slate-900 block">{b.guestName || 'Guest'}</span>
+                              <span className="text-[10px] text-slate-500 font-mono">ID: {b.id || 'N/A'}</span>
                             </div>
                           </div>
                         </td>
