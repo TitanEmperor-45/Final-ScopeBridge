@@ -434,6 +434,51 @@ app.post("/api/admin/system-health/diagnostic", async (_req, res) => {
   });
 });
 
+// Production Database State & Save Endpoints for Published Domain
+app.get("/api/prod-db/state", (_req, res) => {
+  try {
+    const prodDb = readProdDatabase();
+    res.json({ success: true, collections: prodDb?.collections || {} });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to read production database state", details: err.message });
+  }
+});
+
+app.post("/api/prod-db/save", (req, res) => {
+  try {
+    const { collectionName, id, data } = req.body || {};
+    if (!collectionName || !id || !data) {
+      return res.status(400).json({ error: "Missing required fields: collectionName, id, data" });
+    }
+    const prodDb = readProdDatabase() || { collections: {} };
+    const cols = prodDb.collections || {};
+    const items = Array.isArray(cols[collectionName]) ? [...cols[collectionName]] : [];
+    const primaryKey = collectionName === 'promos' ? 'code' : 'id';
+    const itemKey = String(data[primaryKey] || data.id || id);
+    const existingIdx = items.findIndex((i: any) => String(i?.[primaryKey] || i?.id) === itemKey);
+    
+    const record = { ...data, [primaryKey]: itemKey, id: data.id || id, updatedAt: new Date().toISOString() };
+    if (existingIdx >= 0) {
+      items[existingIdx] = { ...items[existingIdx], ...record };
+    } else {
+      items.push({ ...record, createdAt: record.createdAt || new Date().toISOString() });
+    }
+
+    writeProdDatabase({
+      ...prodDb,
+      collections: { ...cols, [collectionName]: items },
+    });
+
+    res.json({ success: true, message: `Successfully saved record to ${collectionName}` });
+  } catch (err: any) {
+    res.status(500).json({ error: "Failed to save to production database", details: err.message });
+  }
+});
+
+app.post("/api/prod/log-db-event", (_req, res) => {
+  res.json({ success: true });
+});
+
 // Gemini Hub: 24/7 AI Guest & Operations Assistant
 app.post("/api/gemini/chat", async (req, res) => {
   try {
