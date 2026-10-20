@@ -28,8 +28,10 @@ import {
   Calendar,
   Link2,
   Film,
+  Scale,
 } from 'lucide-react';
 import { MarketingVideoDemoModal } from './common/MarketingVideoDemoModal';
+import { GlobalComplianceModal } from './common/GlobalComplianceModal';
 
 interface HeaderProps {
   currentRole: AppRole;
@@ -111,6 +113,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [isNotificationHubOpen, setIsNotificationHubOpen] = useState(false);
   const [isPromoVideoOpen, setIsPromoVideoOpen] = useState(false);
+  const [isComplianceModalOpen, setIsComplianceModalOpen] = useState(false);
   const [emailSubject, setEmailSubject] = useState('Booking & Payment Inquiry');
   const [emailBody, setEmailBody] = useState('');
   const [emailSentToast, setEmailSentToast] = useState<string | null>(null);
@@ -420,6 +423,17 @@ export const Header: React.FC<HeaderProps> = ({
               >
                 <Film className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
                 <span>🎬 Promo Video</span>
+              </button>
+
+              {/* Global Legal & Regulatory Compliance */}
+              <button
+                type="button"
+                onClick={() => setIsComplianceModalOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-2 bg-slate-100 text-slate-800 hover:bg-slate-200 rounded-xl text-xs font-bold border border-slate-300 transition-colors cursor-pointer shrink-0"
+                title="Global Legal & Regulatory Compliance (SA, US, EU Laws & Bylaws)"
+              >
+                <Scale className="w-3.5 h-3.5 text-slate-700" />
+                <span>⚖️ Legal & Laws</span>
               </button>
 
               {/* 24/7 AI Host / WhatsApp Concierge */}
@@ -939,6 +953,11 @@ export const Header: React.FC<HeaderProps> = ({
       <MarketingVideoDemoModal
         isOpen={isPromoVideoOpen}
         onClose={() => setIsPromoVideoOpen(false)}
+      />
+      {/* Global Legal & Regulatory Compliance Modal */}
+      <GlobalComplianceModal
+        isOpen={isComplianceModalOpen}
+        onClose={() => setIsComplianceModalOpen(false)}
       />
     </header>
   );

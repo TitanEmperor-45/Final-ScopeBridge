@@ -155,9 +155,8 @@ async function safeGenerateContent(
   }
 ): Promise<{ text: string | null; isAiPowered: boolean; source: string }> {
   const candidateModels = [
-    "gemini-2.5-flash",
-    "gemini-2.5-pro",
-    "gemini-2.0-flash",
+    "gemini-3.8-flash",
+    "gemini-4-argon",
   ];
 
   for (const model of candidateModels) {
@@ -532,7 +531,7 @@ app.post("/api/gemini/search-grounding", async (req, res) => {
     }
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.8-flash",
       contents: query,
       config: {
         tools: [{ googleSearch: {} }],
@@ -547,7 +546,7 @@ app.post("/api/gemini/search-grounding", async (req, res) => {
       reply,
       groundingChunks,
       isAiPowered: true,
-      source: "gemini-2.5-flash (googleSearch)",
+      source: "gemini-3.8-flash (googleSearch)",
     });
   } catch (err: any) {
     console.warn("[Search Grounding Fallback] Using local insight:", err?.message || err);
@@ -580,7 +579,7 @@ app.post("/api/gemini/maps-grounding", async (req, res) => {
     const fullPrompt = location ? `Find maps and location information for "${query}" near ${location}` : query;
 
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: "gemini-3.8-flash",
       contents: fullPrompt,
       config: {
         tools: [{ googleMaps: {} }],
@@ -595,7 +594,7 @@ app.post("/api/gemini/maps-grounding", async (req, res) => {
       reply,
       groundingChunks,
       isAiPowered: true,
-      source: "gemini-2.5-flash (googleMaps)",
+      source: "gemini-3.8-flash (googleMaps)",
     });
   } catch (err: any) {
     console.warn("[Maps Grounding Fallback] Using local map insight:", err?.message || err);
