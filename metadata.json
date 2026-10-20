@@ -1,0 +1,7 @@
+{
+  "name": "ScopeBridge",
+  "description": "Global Property, Nanny & Shuttle Booking and Management Platform for guests, owners, super admins, nannies, and shuttle drivers worldwide.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

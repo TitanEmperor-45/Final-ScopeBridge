@@ -1,0 +1,43 @@
+[
+  {
+    "snapshotId": "SNAPSHOT-PROD-2026-10-18T13-44-25-142Z-YS1K",
+    "timestamp": "2026-10-18T13:44:25.142Z",
+    "triggerType": "system_boot",
+    "databaseEngine": "GOOGLE_CLOUD_SQL_PRODUCTION_DB",
+    "databaseId": "ai-studio-staysyncproperty-2e13e0fd-d4da-4f75-9ef4-ab92045cf50c",
+    "checksumSha256": "3fdfbc747fc6c66292503575935c279ba7795a4bd747f71de8e3ddb02339bb76",
+    "totalTables": 22,
+    "totalRecords": 91,
+    "sizeBytes": 2101001,
+    "sizeFormatted": "2.00 MB",
+    "tableRecordCounts": {
+      "users": 15,
+      "properties": 2,
+      "bookings": 3,
+      "reviews": 2,
+      "cleaningTasks": 11,
+      "promos": 4,
+      "alerts": 7,
+      "accessRequests": 2,
+      "nannies": 2,
+      "nannyBookings": 1,
+      "shuttleDrivers": 2,
+      "shuttleBookings": 1,
+      "roomBids": 2,
+      "fleetServiceRequests": 1,
+      "quotations": 1,
+      "invoices": 1,
+      "kioskFlightBookings": 1,
+      "kioskCarBookings": 1,
+      "channels": 9,
+      "paymentGateways": 8,
+      "settings": 7,
+      "calendarEvents": 8
+    },
+    "status": "VERIFIED",
+    "filePath": "/app/applet/data/backups/SNAPSHOT-PROD-2026-10-18T13-44-25-142Z-YS1K.json",
+    "verifiedIntegrity": true,
+    "zeroDataLossGuarantee": true,
+    "liveDatabaseRecordsUntouched": true
+  }
+]

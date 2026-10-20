@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <script>
+      (function () {
+        // Permanent resolution for "[vite] WebSocket closed without opened" in Cloud Run / iframe preview
+        var NativeWebSocket = window.WebSocket;
+        if (NativeWebSocket) {
+          function VirtualViteWebSocket(url, protocols) {
+            this.url = String(url || '');
+            this.protocol = Array.isArray(protocols) ? (protocols[0] || '') : String(protocols || '');
+            this.readyState = 1; // OPEN
+            this.bufferedAmount = 0;
+            this.extensions = '';
+            this.binaryType = 'blob';
+            this.onopen = null;
+            this.onerror = null;
+            this.onclose = null;
+            this.onmessage = null;
+            var self = this;
+            setTimeout(function () {
+              if (typeof self.onopen === 'function') {
+                try { self.onopen({ type: 'open', target: self }); } catch (_e) {}
+              }
+            }, 0);
+          }
+          VirtualViteWebSocket.prototype.send = function () {};
+          VirtualViteWebSocket.prototype.close = function () { this.readyState = 3; };
+          VirtualViteWebSocket.prototype.addEventListener = function (type, listener) {
+            if (type === 'open' && typeof listener === 'function') {
+              var self = this;
+              setTimeout(function () {
+                try { listener.call(self, { type: 'open', target: self }); } catch (_e) {}
+              }, 0);
+            }
+          };
+          VirtualViteWebSocket.prototype.removeEventListener = function () {};
+          VirtualViteWebSocket.prototype.dispatchEvent = function () { return true; };
+          VirtualViteWebSocket.CONNECTING = 0;
+          VirtualViteWebSocket.OPEN = 1;
+          VirtualViteWebSocket.CLOSING = 2;
+          VirtualViteWebSocket.CLOSED = 3;
+
+          var WrappedWebSocket = function (url, protocols) {
+            var u = String(url || '');
+            var p = Array.isArray(protocols) ? protocols.join(',') : String(protocols || '');
+            if (
+              p.indexOf('vite-hmr') !== -1 ||
+              p.indexOf('vite-ping') !== -1 ||
+              u.indexOf('token=') !== -1 ||
+              u.indexOf('__vite') !== -1 ||
+              (u.indexOf(window.location.host) !== -1 && p.indexOf('vite') !== -1)
+            ) {
+              return new VirtualViteWebSocket(url, protocols);
+            }
+            try {
+              return protocols !== undefined
+                ? new NativeWebSocket(url, protocols)
+                : new NativeWebSocket(url);
+            } catch (_err) {
+              return new VirtualViteWebSocket(url, protocols);
+            }
+          };
+          WrappedWebSocket.prototype = NativeWebSocket.prototype;
+          WrappedWebSocket.CONNECTING = 0;
+          WrappedWebSocket.OPEN = 1;
+          WrappedWebSocket.CLOSING = 2;
+          WrappedWebSocket.CLOSED = 3;
+          window.WebSocket = WrappedWebSocket;
+        }
+
+        // Prevent any Vite WebSocket promise rejection from surfacing
+        window.addEventListener(
+          'unhandledrejection',
+          function (event) {
+            var reason = event && event.reason ? String(event.reason.message || event.reason) : '';
+            if (
+              reason.indexOf('WebSocket closed without opened') !== -1 ||
+              reason.indexOf('[vite]') !== -1 ||
+              reason.indexOf('failed to connect to websocket') !== -1
+            ) {
+              event.preventDefault();
+              event.stopImmediatePropagation();
+            }
+          },
+          true
+        );
+      })();
+    </script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>ScopeBridg - Global Property, Nanny & Shuttle Platform</title>
+    <meta name="description" content="Global Property, Nanny & Shuttle Booking and Management Platform for guests, owners, super admins, nannies, and shuttle drivers worldwide." />
+    <meta property="og:title" content="ScopeBridg - Global Property, Nanny & Shuttle Platform" />
+    <meta property="og:description" content="Global Property, Nanny & Shuttle Booking and Management Platform for guests, owners, super admins, nannies, and shuttle drivers worldwide." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://ais-pre-prho5hzgxphrbuhiofy4qb-872497617609.europe-west2.run.app" />
+    <meta property="og:site_name" content="StaySync ScopeBridg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="StaySync ScopeBridg - Global Property & Executive Stays" />
+    <meta name="twitter:description" content="Global Executive Residences, Direct Bookings, Nanny, Shuttle & Property Management Platform." />
+    <meta name="theme-color" content="#0b192c" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

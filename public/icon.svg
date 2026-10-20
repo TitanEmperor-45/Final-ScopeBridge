@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="navyBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0e1f38" />
+      <stop offset="40%" stop-color="#0b172a" />
+      <stop offset="100%" stop-color="#060c17" />
+    </linearGradient>
+    <linearGradient id="goldShimmer" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff0a6" />
+      <stop offset="25%" stop-color="#e6bf65" />
+      <stop offset="60%" stop-color="#d4a340" />
+      <stop offset="100%" stop-color="#9a711c" />
+    </linearGradient>
+    <linearGradient id="goldBright" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d4a340" />
+      <stop offset="50%" stop-color="#fff2b3" />
+      <stop offset="100%" stop-color="#d4a340" />
+    </linearGradient>
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="512" height="512" rx="100" fill="url(#navyBg)" />
+  <rect width="504" height="504" x="4" y="4" rx="96" fill="none" stroke="url(#goldShimmer)" stroke-width="2" opacity="0.3" />
+
+  <!-- Inner Ambient Glow -->
+  <circle cx="256" cy="230" r="180" fill="#d4a340" opacity="0.06" filter="url(#goldGlow)" />
+
+  <g transform="translate(0, -10)">
+    <!-- LUXURY GOLD CROWN -->
+    <!-- Top Center Crest Diamond -->
+    <path d="M256 92 L264 104 L256 116 L248 104 Z" fill="url(#goldBright)" />
+    
+    <!-- Crown Structure -->
+    <path d="M256 120 
+             C262 120 270 126 278 136 
+             L312 118 
+             C306 142 296 160 286 168 
+             L308 174 
+             C286 182 272 184 256 184 
+             C240 184 226 182 204 174 
+             L226 168 
+             C216 160 206 142 200 118 
+             L234 136 
+             C242 126 250 120 256 120 Z" 
+          fill="url(#goldShimmer)" />
+
+    <!-- Crown Base Band -->
+    <path d="M214 186 C228 190 242 192 256 192 C270 192 284 190 298 186 L296 192 C282 196 269 198 256 198 C243 198 230 196 216 192 Z" fill="url(#goldBright)" />
+
+    <!-- ARCHED SHIELD / PILLARS EMBLEM -->
+    <!-- Outer Shield Frame -->
+    <path d="M192 210 
+             C212 202 234 198 256 198 
+             C278 198 300 202 320 210 
+             L320 286 
+             C320 330 288 358 256 372 
+             C224 358 192 330 192 286 
+             Z" 
+          fill="none" 
+          stroke="url(#goldShimmer)" 
+          stroke-width="7" 
+          stroke-linejoin="round" />
+
+    <!-- Top Arch Inner Rim -->
+    <path d="M202 222 C218 215 236 211 256 211 C276 211 294 215 310 222" 
+          fill="none" 
+          stroke="url(#goldBright)" 
+          stroke-width="3" />
+
+    <!-- 4 CLASSICAL PILLARS / ARCHWAYS -->
+    <!-- Pillar 1 -->
+    <rect x="210" y="238" width="16" height="66" rx="8" fill="url(#goldShimmer)" />
+    <!-- Pillar 2 -->
+    <rect x="234" y="234" width="16" height="74" rx="8" fill="url(#goldShimmer)" />
+    <!-- Pillar 3 -->
+    <rect x="262" y="234" width="16" height="74" rx="8" fill="url(#goldShimmer)" />
+    <!-- Pillar 4 -->
+    <rect x="286" y="238" width="16" height="66" rx="8" fill="url(#goldShimmer)" />
+
+    <!-- Pillar Base Rail -->
+    <path d="M204 314 C220 326 238 334 256 338 C274 334 292 326 308 314" 
+          fill="none" 
+          stroke="url(#goldBright)" 
+          stroke-width="4" 
+          stroke-linecap="round" />
+
+    <!-- Bottom Shield Accent Point -->
+    <polygon points="256,380 262,370 250,370" fill="url(#goldBright)" />
+
+    <!-- STAYSYNC TYPOGRAPHY -->
+    <text x="256" y="426" 
+          font-family="'Cinzel', 'Trajan Pro', 'Montserrat', 'Cinzel Decorative', 'Georgia', serif" 
+          font-size="34" 
+          font-weight="900" 
+          letter-spacing="9" 
+          fill="url(#goldBright)" 
+          text-anchor="middle">STAYSYNC</text>
+
+    <!-- ScopeBridg Subtitle -->
+    <text x="256" y="454" 
+          font-family="'Montserrat', 'Inter', -apple-system, sans-serif" 
+          font-size="12" 
+          font-weight="700" 
+          letter-spacing="6" 
+          fill="#e6bf65" 
+          opacity="0.85" 
+          text-anchor="middle">SCOPEBRIDG</text>
+  </g>
+</svg>

@@ -1,0 +1,168 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "System user account (guest, owner, admin, super_admin, nanny, driver, kiosk)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "fullName": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "role": { "type": "string" },
+        "status": { "type": "string" },
+        "bankAccount": { "type": "object" }
+      },
+      "required": ["id", "role"]
+    },
+    "Property": {
+      "title": "Property",
+      "description": "Property listing with owner bank account, property pictures & videos, and room pictures & videos",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "location": { "type": "string" },
+        "pricePerNightZar": { "type": "number" },
+        "images": { "type": "array", "items": { "type": "string" } },
+        "videos": { "type": "array", "items": { "type": "string" } },
+        "bankAccount": {
+          "type": "object",
+          "properties": {
+            "bankName": { "type": "string" },
+            "accountHolder": { "type": "string" },
+            "accountNumber": { "type": "string" },
+            "accountType": { "type": "string" },
+            "branchCode": { "type": "string" },
+            "swiftCode": { "type": "string" },
+            "payoutCurrency": { "type": "string" }
+          }
+        },
+        "rooms": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "name": { "type": "string" },
+              "basePrice": { "type": "number" },
+              "weekendPrice": { "type": "number" },
+              "images": { "type": "array", "items": { "type": "string" } },
+              "videos": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      },
+      "required": ["id", "title"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Property accommodation booking record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "propertyId": { "type": "string" },
+        "guestName": { "type": "string" },
+        "totalPaidZar": { "type": "number" }
+      },
+      "required": ["id", "propertyId"]
+    },
+    "GenericRecord": {
+      "title": "GenericRecord",
+      "description": "Operational platform record (reviews, cleanings, promos, alerts, channels, gateways, nanny/shuttle bookings, invoices, quotations, wallets)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "updatedAt": { "type": "string" }
+      }
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Registered user accounts"
+    },
+    "properties": {
+      "schema": { "$ref": "#/entities/Property" },
+      "description": "Property listings with bank accounts, property photos/videos, and room photos/videos"
+    },
+    "bookings": {
+      "schema": { "$ref": "#/entities/Booking" },
+      "description": "Accommodation booking records"
+    },
+    "reviews": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Guest property reviews"
+    },
+    "cleaningTasks": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Housekeeping & turnover tasks"
+    },
+    "promos": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Promotional discount codes"
+    },
+    "alerts": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Admin audit and operational alerts"
+    },
+    "channels": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "OTA distribution channel configurations"
+    },
+    "paymentGateways": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Payment gateway configurations"
+    },
+    "accessRequests": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Owner channel and gateway access requests"
+    },
+    "nannies": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Certified nanny profiles"
+    },
+    "nannyBookings": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Childcare & nanny booking sessions"
+    },
+    "shuttleDrivers": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Executive shuttle & chauffeur driver profiles"
+    },
+    "shuttleBookings": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Shuttle transfer bookings"
+    },
+    "roomBids": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Guest room rate bids and owner counter-offers"
+    },
+    "fleetServiceRequests": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Driver fleet maintenance and service requests"
+    },
+    "quotations": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Owner & Admin guest quotations"
+    },
+    "invoices": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Owner & Admin tax invoices"
+    },
+    "kioskFlightBookings": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Self-service kiosk flight bookings"
+    },
+    "kioskCarBookings": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Self-service kiosk car rental bookings"
+    },
+    "settings": {
+      "schema": { "$ref": "#/entities/GenericRecord" },
+      "description": "Global platform settings and virtual wallets"
+    }
+  }
+}

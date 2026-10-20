@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to validate incoming document payload is a valid map object
+    function isValidPayload() {
+      return request.resource.data is map;
+    }
+
+    // Properties collection: stores owner bank accounts, property pictures/videos, and room pictures/videos
+    match /properties/{propertyId} {
+      allow read: if true;
+      allow create, update: if isValidPayload();
+      allow delete: if true;
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if isValidPayload();
+      allow delete: if true;
+    }
+
+    // Bookings collection
+    match /bookings/{bookingId} {
+      allow read: if true;
+      allow create, update: if isValidPayload();
+      allow delete: if true;
+    }
+
+    // All operational & financial collections (reviews, cleaningTasks, promos, alerts,
+    // channels, paymentGateways, accessRequests, nannies, nannyBookings, shuttleDrivers,
+    // shuttleBookings, roomBids, fleetServiceRequests, quotations, invoices,
+    // kioskFlightBookings, kioskCarBookings, settings, test)
+    match /{collectionName}/{docId} {
+      allow read: if true;
+      allow create, update: if isValidPayload();
+      allow delete: if true;
+    }
+  }
+}
