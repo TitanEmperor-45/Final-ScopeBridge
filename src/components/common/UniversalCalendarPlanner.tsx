@@ -126,24 +126,36 @@ function isDateInRange(dayYmd: string, startYmd: string, endYmd: string): boolea
   return dayYmd >= startYmd && dayYmd <= effectiveEnd;
 }
 
+const safeUpper = (val: any) => {
+  if (!val) return '';
+  if (typeof val === 'string') return val.toUpperCase();
+  if (typeof val === 'object' && val !== null && (val.id || val.name)) return String(val.id || val.name).toUpperCase();
+  return String(val).toUpperCase();
+};
+const safeMapUpper = (arr: any[]) => {
+  if (!Array.isArray(arr)) return [];
+  return arr.filter(Boolean).map((c) => safeUpper(c));
+};
+
 export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> = ({
-  currentRole,
-  currentUser,
-  properties,
-  bookings,
-  calendarEvents,
-  channels,
+  currentRole = 'guest',
+  currentUser = { id: 'guest-1', name: 'Guest', fullName: 'Guest', username: 'guest', role: 'guest', email: '', phone: '', avatar: '', title: 'Guest', location: '', badge: '' },
+  properties = [],
+  bookings = [],
+  calendarEvents = [],
+  channels = [],
   nannyBookings = [],
   shuttleBookings = [],
   registeredUsers = [],
   selectedCurrency = 'ZAR',
-  onBookProperty,
-  onUpdateBookings,
-  onUpdateCalendarEvents,
-  onUpdateProperties,
+  onBookProperty = () => {},
+  onUpdateBookings = () => {},
+  onUpdateCalendarEvents = () => {},
+  onUpdateProperties = () => {},
   onUpdateUser,
   onPublishPropertyToChannel,
   initialOpenGuestBookingLinkModal = false,
+  compactMode = false,
 }) => {
   const calendarGridRef = useRef<HTMLDivElement>(null);
 
@@ -394,7 +406,8 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
 
   // Active User's Registered Holiday Channels
   const userRegisteredChannels = useMemo(() => {
-    const base = currentUser.registeredHolidayChannels || [
+    const rawBase = currentUser?.registeredHolidayChannels;
+    const base = Array.isArray(rawBase) ? rawBase : [
       'direct',
       'airbnb',
       'booking_com',
@@ -404,7 +417,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
       'vrbo',
       'google_rentals',
     ];
-    return Array.from(new Set(['direct', ...base]));
+    return Array.from(new Set(['direct', ...base.filter(Boolean).map((c) => safeUpper(c))]));
   }, [currentUser]);
 
   const handleToggleUserHolidayChannel = (channelId: string) => {
@@ -419,9 +432,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
       });
     }
     triggerSyncBanner(
-      `Profile Holiday Channels updated (${next.length} active channels). All calendar plans & bookings now auto-sync across ${next
-        .map((c) => c.toUpperCase())
-        .join(', ')}.`
+      `Profile Holiday Channels updated (${next.length} active channels). All calendar plans & bookings now auto-sync across ${safeMapUpper(next).join(', ')}.`
     );
   };
 
@@ -454,37 +465,42 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
     const isPrivileged = currentRole === 'admin' || currentRole === 'super_admin' || currentRole === 'owner';
 
     bookings.forEach((b) => {
-      const prop = properties.find((p) => p.id === b.propertyId);
+      if (!b) return;
+      const prop = properties.find((p) => p && p.id === b?.propertyId);
       const propChannels = prop?.publishedChannels || ['direct', 'airbnb', 'booking_com'];
       const normalizedStatus: 'confirmed' | 'pending' | 'cancelled' =
-        b.status === 'cancelled'
+        b?.status === 'cancelled'
           ? 'cancelled'
-          : b.status === 'pending' || b.paymentStatus === 'pending'
+          : b?.status === 'pending' || b?.paymentStatus === 'pending'
           ? 'pending'
           : 'confirmed';
 
+      const bookingTitle = b?.guestName
+        ? `${b.guestName} — ${b?.propertyTitle || prop?.title || 'ScopeBridge Residence'}`
+        : (b?.propertyTitle || prop?.title || 'ScopeBridge Residence');
+
       list.push({
-        id: b.id,
+        id: b?.id || `BK-${Math.random().toString(36).slice(2, 7)}`,
         sourceType: 'booking',
-        title: isPrivileged ? `${b.guestName} — ${b.propertyTitle}` : `🔴 Booked — ${b.propertyTitle}`,
+        title: isPrivileged ? bookingTitle : `🔴 Booked — ${b?.propertyTitle || prop?.title || 'ScopeBridge Residence'}`,
         subtitle: isPrivileged
-          ? `${b.nights} Night(s) • ${b.guestsCount} Guest(s) • PIN: ${b.doorCode || '4821#'}`
-          : `${b.nights} Night(s) Stay • Occupied / Booked`,
+          ? `${b?.nights || 1} Night(s) • ${b?.guestsCount || 1} Guest(s) • PIN: ${b?.doorCode || '4821#'}`
+          : `${b?.nights || 1} Night(s) Stay • Occupied / Booked`,
         category: 'stay_booking',
-        startDate: b.checkInDate,
-        endDate: b.checkOutDate,
+        startDate: b?.checkInDate || '2026-09-26',
+        endDate: b?.checkOutDate || b?.checkInDate || '2026-09-27',
         startTime: '14:00',
         endTime: '10:00',
         status: normalizedStatus,
-        propertyId: b.propertyId,
-        propertyTitle: b.propertyTitle,
-        guestOrUserName: isPrivileged ? b.guestName : 'Booked Guest',
-        channelId: b.channel || 'direct',
-        syncedChannels: Array.from(new Set(['direct', b.channel || 'direct', ...propChannels, ...userRegisteredChannels])),
-        amountZar: isPrivileged ? (b.totalAmount || 0) : 0,
-        doorCode: isPrivileged ? b.doorCode : undefined,
+        propertyId: b?.propertyId || prop?.id,
+        propertyTitle: b?.propertyTitle || prop?.title,
+        guestOrUserName: isPrivileged ? (b?.guestName || 'Guest') : 'Booked Guest',
+        channelId: b?.channel || 'direct',
+        syncedChannels: Array.from(new Set(['direct', b?.channel || 'direct', ...propChannels, ...userRegisteredChannels].filter(Boolean))),
+        amountZar: isPrivileged ? (b?.totalAmount || 0) : 0,
+        doorCode: isPrivileged ? b?.doorCode : undefined,
         notes: isPrivileged
-          ? `Channel: ${(b.channel || 'direct').toUpperCase()} • Payment: ${b.paymentStatus.toUpperCase()} • Phone: ${b.guestPhone || 'N/A'}`
+          ? `Channel: ${safeUpper(b?.channel || 'direct')} • Payment: ${safeUpper(b?.paymentStatus || 'confirmed')} • Phone: ${b?.guestPhone || 'N/A'}`
           : 'Room Occupied / Booked',
         rawBooking: b,
       });
@@ -492,95 +508,100 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
 
     // 2. Universal Planner Events (Holidays, Flights, Dining, Meetings, Maintenance, Personal)
     calendarEvents.forEach((ev) => {
+      if (!ev) return;
       list.push({
-        id: ev.id,
+        id: ev?.id || `PLAN-${Math.random().toString(36).slice(2, 7)}`,
         sourceType: 'plan',
-        title: ev.title,
-        subtitle: `${ev.userName} (${ev.userRole.toUpperCase()}) • ${
-          EVENT_CATEGORIES.find((c) => c.id === ev.category)?.label || 'Plan'
+        title: ev?.title || 'Scheduled Plan',
+        subtitle: `${ev?.userName || 'User'} (${safeUpper(ev?.userRole || 'guest')}) • ${
+          EVENT_CATEGORIES.find((c) => c.id === ev?.category)?.label || 'Plan'
         }`,
-        category: ev.category,
-        startDate: ev.startDate,
-        endDate: ev.endDate || ev.startDate,
-        startTime: ev.startTime || '09:00',
-        endTime: ev.endTime || '17:00',
-        status: ev.status,
-        propertyId: ev.propertyId,
-        propertyTitle: ev.propertyTitle,
-        guestOrUserName: ev.userName,
-        channelId: ev.channelId || 'direct',
-        syncedChannels: Array.from(new Set(['direct', ...(ev.syncedChannels || []), ...userRegisteredChannels])),
-        amountZar: ev.amountZar || 0,
-        notes: ev.notes,
+        category: ev?.category || 'personal_event',
+        startDate: ev?.startDate || '2026-09-26',
+        endDate: ev?.endDate || ev?.startDate || '2026-09-26',
+        startTime: ev?.startTime || '09:00',
+        endTime: ev?.endTime || '17:00',
+        status: ev?.status || 'confirmed',
+        propertyId: ev?.propertyId,
+        propertyTitle: ev?.propertyTitle,
+        guestOrUserName: ev?.userName || 'User',
+        channelId: ev?.channelId || 'direct',
+        syncedChannels: Array.from(new Set(['direct', ...(ev?.syncedChannels || []), ...userRegisteredChannels].filter(Boolean))),
+        amountZar: ev?.amountZar || 0,
+        notes: ev?.notes,
         rawPlan: ev,
       });
     });
 
     // 3. Nanny Bookings
     nannyBookings.forEach((nb) => {
+      if (!nb) return;
       const st: 'confirmed' | 'pending' | 'cancelled' =
-        nb.status === 'cancelled' ? 'cancelled' : nb.status === 'pending' ? 'pending' : 'confirmed';
+        nb?.status === 'cancelled' ? 'cancelled' : nb?.status === 'pending' ? 'pending' : 'confirmed';
       list.push({
-        id: nb.id,
+        id: nb?.id || `NAN-${Math.random().toString(36).slice(2, 7)}`,
         sourceType: 'nanny',
-        title: `Childcare: ${nb.nannyName} for ${nb.parentName}`,
-        subtitle: `${nb.propertyTitle} • ${nb.startTime}–${nb.endTime} (${nb.childrenCount} child)`,
+        title: `Childcare: ${nb?.nannyName || 'Nanny'} for ${nb?.parentName || 'Guest'}`,
+        subtitle: `${nb?.propertyTitle || 'Residence'} • ${nb?.startTime || '09:00'}–${nb?.endTime || '17:00'} (${nb?.childrenCount || 1} child)`,
         category: 'childcare_nanny',
-        startDate: nb.date,
-        endDate: nb.date,
-        startTime: nb.startTime,
-        endTime: nb.endTime,
+        startDate: nb?.date || '2026-09-26',
+        endDate: nb?.date || '2026-09-26',
+        startTime: nb?.startTime || '09:00',
+        endTime: nb?.endTime || '17:00',
         status: st,
-        propertyId: nb.propertyId,
-        propertyTitle: nb.propertyTitle,
-        guestOrUserName: nb.parentName,
+        propertyId: nb?.propertyId,
+        propertyTitle: nb?.propertyTitle,
+        guestOrUserName: nb?.parentName || 'Guest',
         channelId: 'direct',
         syncedChannels: ['direct', 'airbnb', 'booking_com'],
-        amountZar: nb.totalAmountZar,
-        notes: nb.specialNotes,
+        amountZar: nb?.totalAmountZar || 0,
+        notes: nb?.specialNotes,
       });
     });
 
     // 4. Shuttle Bookings
     shuttleBookings.forEach((sb) => {
+      if (!sb) return;
       const st: 'confirmed' | 'pending' | 'cancelled' =
-        sb.status === 'cancelled' ? 'cancelled' : sb.paymentStatus === 'pending' ? 'pending' : 'confirmed';
+        sb?.status === 'cancelled' ? 'cancelled' : sb?.paymentStatus === 'pending' ? 'pending' : 'confirmed';
       list.push({
-        id: sb.id,
+        id: sb?.id || `SHU-${Math.random().toString(36).slice(2, 7)}`,
         sourceType: 'shuttle',
-        title: `Shuttle: ${sb.pickupLocation} → ${sb.dropoffLocation}`,
-        subtitle: `Chauffeur: ${sb.driverName} (${sb.vehicleModel}) • Guest: ${sb.guestName || sb.passengerName}`,
+        title: `Shuttle: ${sb?.pickupLocation || 'Airport'} → ${sb?.dropoffLocation || 'Residence'}`,
+        subtitle: `Chauffeur: ${sb?.driverName || 'Driver'} (${sb?.vehicleModel || 'Executive Sedan'}) • Guest: ${sb?.guestName || sb?.passengerName || 'Guest'}`,
         category: 'flight_transit',
-        startDate: sb.date,
-        endDate: sb.date,
-        startTime: sb.time,
-        endTime: sb.time,
+        startDate: sb?.date || '2026-09-26',
+        endDate: sb?.date || '2026-09-26',
+        startTime: sb?.time || '10:00',
+        endTime: sb?.time || '10:00',
         status: st,
-        guestOrUserName: sb.guestName || sb.passengerName || 'Guest',
+        guestOrUserName: sb?.guestName || sb?.passengerName || 'Guest',
         channelId: 'direct',
         syncedChannels: ['direct', 'booking_com', 'expedia'],
-        amountZar: sb.totalAmountZar,
-        notes: sb.specialRequests,
+        amountZar: sb?.totalAmountZar || 0,
+        notes: sb?.specialRequests,
       });
     });
 
     return list.filter((item) => {
+      if (!item) return false;
       if (selectedPropertyFilter !== 'all' && item.propertyId && item.propertyId !== selectedPropertyFilter) {
         return false;
       }
       if (selectedRoomFilter !== 'all') {
-        const itemRoomId = (item as any).roomId;
-        const itemTitle = (item.title || '').toLowerCase();
-        const itemSub = (item.subtitle || '').toLowerCase();
+        const itemRoomId = (item as any)?.roomId;
+        const itemTitle = String(item?.title || '').toLowerCase();
+        const itemSub = String(item?.subtitle || '').toLowerCase();
         if (itemRoomId && itemRoomId !== selectedRoomFilter) return false;
         if (!itemRoomId && !itemTitle.includes(selectedRoomFilter.toLowerCase()) && !itemSub.includes(selectedRoomFilter.toLowerCase())) {
           return false;
         }
       }
       if (selectedChannelFilter !== 'all') {
+        const itemChan = String(item?.channelId || '').toLowerCase();
         const chMatch =
-          item.channelId.toLowerCase().includes(selectedChannelFilter.toLowerCase()) ||
-          item.syncedChannels.some((c) => c.toLowerCase().includes(selectedChannelFilter.toLowerCase()));
+          itemChan.includes(selectedChannelFilter.toLowerCase()) ||
+          (Array.isArray(item?.syncedChannels) && item.syncedChannels.some((c) => String(c || '').toLowerCase().includes(selectedChannelFilter.toLowerCase())));
         if (!chMatch) return false;
       }
       if (selectedStatusFilter !== 'all' && item.status !== selectedStatusFilter) {
@@ -589,14 +610,14 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase().trim();
         const match =
-          item.title.toLowerCase().includes(q) ||
-          item.subtitle.toLowerCase().includes(q) ||
-          item.id.toLowerCase().includes(q) ||
-          item.guestOrUserName.toLowerCase().includes(q) ||
-          (item.propertyTitle || '').toLowerCase().includes(q) ||
-          item.channelId.toLowerCase().includes(q) ||
-          item.startDate.includes(q) ||
-          (item.notes || '').toLowerCase().includes(q);
+          String(item?.title || '').toLowerCase().includes(q) ||
+          String(item?.subtitle || '').toLowerCase().includes(q) ||
+          String(item?.id || '').toLowerCase().includes(q) ||
+          String(item?.guestOrUserName || '').toLowerCase().includes(q) ||
+          String(item?.propertyTitle || '').toLowerCase().includes(q) ||
+          String(item?.channelId || '').toLowerCase().includes(q) ||
+          String(item?.startDate || '').includes(q) ||
+          String(item?.notes || '').toLowerCase().includes(q);
         if (!match) return false;
       }
       return true;
@@ -770,7 +791,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
         },
         doorCode: `${Math.floor(1000 + Math.random() * 9000)}#`,
         channel: (formChannelId as any) || 'direct',
-        source: `Calendar (${formChannelId.toUpperCase()})`,
+        source: `Calendar (${safeUpper(formChannelId || 'direct')})`,
         idVerified: true,
         depositStatus: 'held',
         roomId: selectedRoom?.id,
@@ -822,7 +843,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
       onUpdateCalendarEvents((prev) => [newCalEvent, ...prev]);
 
       triggerSyncBanner(
-        `Booking added for ${formStartDate} → ${newCalEvent.endDate} (${formStatus.toUpperCase()}) & synchronized across ${newCalEvent.syncedChannels.length} channels!`
+        `Booking added for ${formStartDate} → ${newCalEvent.endDate} (${safeUpper(formStatus || 'confirmed')}) & synchronized across ${newCalEvent.syncedChannels.length} channels!`
       );
       setSelectedDate(formStartDate);
       setIsAddModalOpen(false);
@@ -857,7 +878,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
 
     onUpdateCalendarEvents((prev) => [newPlan, ...prev]);
     triggerSyncBanner(
-      `Plan "${newPlan.title}" added (${formStatus.toUpperCase()}) and synced across ${newPlan.syncedChannels.length} registered holiday & OTA channels!`
+      `Plan "${newPlan.title}" added (${safeUpper(formStatus || 'confirmed')}) and synced across ${newPlan.syncedChannels.length} registered holiday & OTA channels!`
     );
     setSelectedDate(formStartDate);
     setIsAddModalOpen(false);
@@ -889,7 +910,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
       )
     );
     triggerSyncBanner(
-      `Updated "${item.title}" to ${newStatus.toUpperCase()} — Calendar availability pushed to ${item.syncedChannels.length} active channels.`
+      `Updated "${item.title}" to ${safeUpper(newStatus || 'confirmed')} — Calendar availability pushed to ${item.syncedChannels.length} active channels.`
     );
   };
 
@@ -991,9 +1012,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
     }
 
     triggerSyncBanner(
-      `Property "${prop.title}" published and reflected across ${nextPublished.length} channels (${nextPublished
-        .map((c) => c.toUpperCase())
-        .join(', ')})!`
+      `Property "${prop.title}" published and reflected across ${nextPublished.length} channels (${safeMapUpper(nextPublished).join(', ')})!`
     );
   };
 
@@ -1435,7 +1454,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                       <span className="text-[10px] font-mono text-emerald-800">({item.startDate})</span>
                     </div>
                     <div className="text-[11px] text-slate-600 flex items-center gap-1 mt-0.5">
-                      <span>Status: {item.status.toUpperCase()}</span>
+                      <span>Status: {safeUpper(item.status || 'confirmed')}</span>
                       <span>·</span>
                       <span className="text-emerald-700 font-semibold">Scroll Calendar →</span>
                     </div>
@@ -1869,7 +1888,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
             <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h4 className="text-xs font-bold text-slate-900">
-                  Registered Holiday & Stay Channels for {currentUser.fullName || currentUser.name} ({currentRole.toUpperCase()})
+                  Registered Holiday & Stay Channels for {currentUser.fullName || currentUser.name} ({safeUpper(currentRole || 'guest')})
                 </h4>
                 <p className="text-[11px] text-slate-500">
                   Toggle channels below to register or unregister your profile for instant holiday & calendar synchronization:
@@ -2242,14 +2261,17 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                   </tr>
                 ) : (
                   bookings.map((b) => {
-                    const prop = properties.find((p) => p.id === b.propertyId) || properties[0];
+                    if (!b) return null;
+                    const prop = properties.find((p) => p && p.id === b?.propertyId) || properties[0];
                     const propRooms = getPropertyBookableRooms(prop);
                     const rm =
                       propRooms.find(
                         (r) =>
-                          r.id === (b as any).roomId ||
-                          ((b as any).roomName && r.name.toLowerCase() === String((b as any).roomName).toLowerCase()) ||
-                          (b.propertyTitle && b.propertyTitle.toLowerCase().includes(r.name.toLowerCase()))
+                          r && (
+                            r.id === (b as any)?.roomId ||
+                            ((b as any)?.roomName && String(r?.name || '').toLowerCase() === String((b as any).roomName).toLowerCase()) ||
+                            (b?.propertyTitle && r?.name && String(b.propertyTitle).toLowerCase().includes(String(r.name).toLowerCase()))
+                          )
                       ) || propRooms[0];
                     const roomImg = rm?.imageUrl || rm?.images?.[0] || prop?.imageUrl || prop?.images?.[0];
                     return (
@@ -2600,7 +2622,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                             >
                               <div className="font-bold text-slate-900 leading-snug">{item.title}</div>
                               <div className="text-[10px] text-slate-500">
-                                {item.startTime} · {item.status.toUpperCase()}
+                                {item.startTime} · {safeUpper(item.status || 'confirmed')}
                               </div>
                               <div className="flex items-center gap-1 pt-1">
                                 <button
@@ -2721,13 +2743,13 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                           </span>
                           <span className="text-sm font-bold text-slate-900">{item.title}</span>
                           <span className="text-xs font-semibold text-slate-500">
-                            · Status: {item.status.toUpperCase()}
+                            · Status: {(item.status || 'confirmed').toUpperCase()}
                           </span>
                         </div>
                         <p className="text-xs text-slate-600">{item.subtitle}</p>
                         <p className="text-[11px] text-slate-500">
                           Dates: {item.startDate} to {item.endDate} · Synced Channels:{' '}
-                          {item.syncedChannels.map((c) => c.toUpperCase()).join(', ')}
+                          {(item.syncedChannels || ['direct']).map((c) => (c || '').toUpperCase()).join(', ')}
                         </p>
                       </div>
 
@@ -2825,7 +2847,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                         <p className="text-xs text-slate-600 mt-0.5">{item.subtitle}</p>
                         <p className="text-[11px] text-slate-500 mt-1">
                           {item.startDate} → {item.endDate} · Channels:{' '}
-                          {item.syncedChannels.map((c) => c.toUpperCase()).join(', ')}
+                          {(item.syncedChannels || ['direct']).map((c) => (c || '').toUpperCase()).join(', ')}
                         </p>
                       </div>
 
@@ -3178,19 +3200,22 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
             <div className="p-6 space-y-5 max-h-[80vh] overflow-y-auto">
               {/* Property & Room Gallery */}
               {(() => {
-                const prop = properties.find((p) => p.id === selectedGuestBooking.propertyId) || properties[0];
+                const prop = properties.find((p) => p && p.id === selectedGuestBooking?.propertyId) || properties[0];
                 const propRooms = getPropertyBookableRooms(prop);
                 const rm =
                   propRooms.find(
                     (r) =>
-                      r.id === (selectedGuestBooking as any).roomId ||
-                      ((selectedGuestBooking as any).roomName &&
-                        r.name.toLowerCase() === String((selectedGuestBooking as any).roomName).toLowerCase()) ||
-                      (selectedGuestBooking.propertyTitle &&
-                        selectedGuestBooking.propertyTitle.toLowerCase().includes(r.name.toLowerCase()))
+                      r && (
+                        r.id === (selectedGuestBooking as any)?.roomId ||
+                        ((selectedGuestBooking as any)?.roomName &&
+                          String(r?.name || '').toLowerCase() === String((selectedGuestBooking as any).roomName).toLowerCase()) ||
+                        (selectedGuestBooking?.propertyTitle &&
+                          r?.name &&
+                          String(selectedGuestBooking.propertyTitle).toLowerCase().includes(String(r.name).toLowerCase()))
+                      )
                   ) || propRooms[0];
                 const displayRoomName =
-                  rm?.name || (selectedGuestBooking as any).roomName || 'Room 1 — Executive King Suite';
+                  rm?.name || (selectedGuestBooking as any)?.roomName || 'Room 1 — Executive King Suite';
                 
                 // Combine all room photos and property photos so all added pictures are displayed
                 const combinedPicturesList: { url: string; label: string }[] = [];
@@ -3331,7 +3356,7 @@ export const UniversalCalendarPlanner: React.FC<UniversalCalendarPlannerProps> =
                               🔴 Status: Booked &amp; Locked
                             </span>
                             <span className="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-bold">
-                              Channel: {(selectedGuestBooking.sourceChannel || selectedGuestBooking.channel || 'Direct').toUpperCase()}
+                              Channel: {safeUpper(selectedGuestBooking?.sourceChannel || selectedGuestBooking?.channel || 'Direct')}
                             </span>
                           </div>
 

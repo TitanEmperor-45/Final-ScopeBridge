@@ -519,6 +519,57 @@ export const GuestView: React.FC<GuestViewProps> = ({
     return `${rateInfo.symbol}${converted.toLocaleString()}`;
   };
 
+  const activeFiltersCount = useMemo(() => {
+    let count = 0;
+    if (selectedAccommodationType !== 'all') count++;
+    if (selectedRoomType !== 'all') count++;
+    if (selectedChannelFilter !== 'all') count++;
+    if (selectedBedConfig !== 'all') count++;
+    if (targetLandmark !== 'all') count++;
+    if (maxPrice < 5000) count++;
+    if (filterSelfCheckIn) count++;
+    if (filterParking) count++;
+    if (filterWifi) count++;
+    if (filterKitchen) count++;
+    if (filterPetFriendly) count++;
+    if (filterFamilyFriendly) count++;
+    if (filterSolar) count++;
+    return count;
+  }, [
+    selectedAccommodationType,
+    selectedRoomType,
+    selectedChannelFilter,
+    selectedBedConfig,
+    targetLandmark,
+    maxPrice,
+    filterSelfCheckIn,
+    filterParking,
+    filterWifi,
+    filterKitchen,
+    filterPetFriendly,
+    filterFamilyFriendly,
+    filterSolar,
+  ]);
+
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setSelectedAccommodationType('all');
+    setSelectedRoomType('all');
+    setSelectedChannelFilter('all');
+    setSelectedBedConfig('all');
+    setSelectedGlobalRegion('all');
+    setSelectedCity('all');
+    setTargetLandmark('all');
+    setMaxPrice(5000);
+    setFilterSelfCheckIn(false);
+    setFilterParking(false);
+    setFilterWifi(false);
+    setFilterKitchen(false);
+    setFilterPetFriendly(false);
+    setFilterFamilyFriendly(false);
+    setFilterSolar(false);
+  };
+
   return (
     <div className="space-y-6">
       {/* Global Brand & Scope Announcement Banner */}
@@ -714,102 +765,114 @@ export const GuestView: React.FC<GuestViewProps> = ({
         />
       ) : (
         <>
-          {/* Global Destination & Region Tabs */}
-          <div className="bg-white p-2 rounded-2xl border border-slate-200 shadow-xs flex items-center gap-1.5 overflow-x-auto">
-
-        {[
-          { id: 'all', label: '🌍 All Global Destinations', city: 'all' },
-          { id: 'South Africa', label: '🇿🇦 South Africa (All Areas & Suburbs)', city: 'all' },
-          { id: 'Europe', label: '🇬🇧 London, Mayfair', city: 'London' },
-          { id: 'Middle East', label: '🇦🇪 Dubai, Downtown', city: 'Dubai' },
-          { id: 'North America', label: '🇺🇸 New York, Tribeca', city: 'New York' },
-          { id: 'Europe', label: '🇫🇷 Paris, Le Marais', city: 'Paris' },
-          { id: 'Asia Pacific', label: '🇮🇩 Bali, Ubud Villa', city: 'Bali' },
-        ].map((dest, idx) => {
-          const isActive =
-            dest.id === 'all'
-              ? selectedGlobalRegion === 'all' && selectedCity === 'all'
-              : dest.city === 'all'
-              ? selectedGlobalRegion === dest.id && selectedCity === 'all'
-              : selectedCity === dest.city;
-          return (
-            <button
-              key={idx}
-              onClick={() => {
-                if (dest.id === 'all') {
+          {/* 1. Sleek One-Touch Discovery & Suburb Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
+            {[
+              {
+                id: 'all',
+                label: `🌍 All Stays (${allPropertiesPool.length})`,
+                action: () => handleResetFilters(),
+                isActive: !searchQuery && selectedAccommodationType === 'all' && selectedChannelFilter === 'all' && !filterSolar && !filterSelfCheckIn,
+              },
+              {
+                id: 'rivonia',
+                label: '📍 Rivonia, Sandton',
+                action: () => {
+                  setSearchQuery('Rivonia');
                   setSelectedGlobalRegion('all');
                   setSelectedCity('all');
-                } else {
-                  setSelectedGlobalRegion(dest.id as any);
-                  setSelectedCity(dest.city);
-                }
-              }}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${
-                isActive
-                  ? 'bg-emerald-800 text-white shadow-xs'
-                  : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-              }`}
-            >
-              <span>{dest.label}</span>
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Main Search & Proximity Selector Bar */}
-      <div className="bg-white p-5 rounded-3xl border border-slate-200 shadow-md space-y-4">
-        {/* Row 1: Destination, Check-In, Check-Out, and Nights Calculation */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
-          {/* Destination Search & Suburb Dropdown */}
-          <div className="md:col-span-5 space-y-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-              <span>1. Global Destination / City / Suburb</span>
-            </label>
-            <div className="flex gap-1.5">
-              <select
-                aria-label="Area / Suburb Preset"
-                value={searchQuery}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setSearchQuery(val);
+                },
+                isActive: searchQuery.toLowerCase().includes('rivonia'),
+              },
+              {
+                id: 'bryanston',
+                label: '📍 Bryanston & Morningside',
+                action: () => {
+                  setSearchQuery('Bryanston');
                   setSelectedGlobalRegion('all');
                   setSelectedCity('all');
-                }}
-                className="px-2.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-emerald-600 cursor-pointer max-w-[140px] shrink-0"
-                title="Select any Global Area / Suburb"
+                },
+                isActive: searchQuery.toLowerCase().includes('bryanston'),
+              },
+              {
+                id: 'solar',
+                label: '☀️ 100% Solar & Inverter Backup',
+                action: () => setFilterSolar(!filterSolar),
+                isActive: filterSolar,
+              },
+              {
+                id: 'self-checkin',
+                label: '🔑 Smart Lock Self Check-in',
+                action: () => setFilterSelfCheckIn(!filterSelfCheckIn),
+                isActive: filterSelfCheckIn,
+              },
+              {
+                id: 'parking',
+                label: '🚗 Free Covered Parking',
+                action: () => setFilterParking(!filterParking),
+                isActive: filterParking,
+              },
+              {
+                id: 'direct',
+                label: '🟢 ScopeBridge Direct (0% Fee)',
+                action: () => setSelectedChannelFilter(selectedChannelFilter === 'ScopeBridge Direct' ? 'all' : 'ScopeBridge Direct'),
+                isActive: selectedChannelFilter === 'ScopeBridge Direct',
+              },
+              {
+                id: 'booking',
+                label: '🔵 Booking.com',
+                action: () => setSelectedChannelFilter(selectedChannelFilter === 'Booking.com' ? 'all' : 'Booking.com'),
+                isActive: selectedChannelFilter === 'Booking.com',
+              },
+              {
+                id: 'airbnb',
+                label: '🔴 Airbnb Superhost',
+                action: () => setSelectedChannelFilter(selectedChannelFilter === 'Airbnb' ? 'all' : 'Airbnb'),
+                isActive: selectedChannelFilter === 'Airbnb',
+              },
+              {
+                id: 'lekkeslaap',
+                label: '🟠 LekkeSlaap SA',
+                action: () => setSelectedChannelFilter(selectedChannelFilter === 'LekkeSlaap' ? 'all' : 'LekkeSlaap'),
+                isActive: selectedChannelFilter === 'LekkeSlaap',
+              },
+            ].map((pill) => (
+              <button
+                key={pill.id}
+                type="button"
+                onClick={pill.action}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 border shadow-2xs ${
+                  pill.isActive
+                    ? 'bg-emerald-800 text-white border-emerald-900 shadow-xs ring-2 ring-emerald-500/30'
+                    : 'bg-white text-slate-700 hover:bg-slate-50 hover:text-slate-900 border-slate-200'
+                }`}
               >
-                <option value="">🌍 All Areas</option>
-                <optgroup label="📍 Active Portfolio Areas">
-                  {Array.from(new Set(allPropertiesPool.map((p) => p.area).filter(Boolean))).map((areaStr) => (
-                    <option key={`active-${areaStr}`} value={areaStr}>
-                      {areaStr}
-                    </option>
-                  ))}
-                </optgroup>
-                {GLOBAL_AREA_GROUPS.map((grp) => (
-                  <optgroup key={grp.groupLabel} label={grp.groupLabel}>
-                    {grp.options.map((opt) => (
-                      <option key={opt.area} value={opt.area}>
-                        {opt.flag} {opt.area}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))}
-              </select>
+                <span>{pill.label}</span>
+              </button>
+            ))}
+          </div>
 
-              <div className="flex-1 relative">
-                <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+      {/* Unified Single Easy Search Bar */}
+      <div className="bg-white p-3 sm:p-4 rounded-3xl border border-slate-200 shadow-md space-y-3">
+        {/* The Single Unified Search Bar Row */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-2 sm:gap-3 items-center">
+          {/* 1. Destination / Where */}
+          <div className="md:col-span-5 flex items-center gap-3 px-3.5 py-2.5 bg-slate-50 hover:bg-slate-100/70 focus-within:bg-white focus-within:ring-2 focus-within:ring-emerald-500/40 border border-slate-200 rounded-2xl transition-all">
+            <MapPin className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <span className="block text-[10px] font-black uppercase tracking-wider text-slate-500 leading-none mb-1">
+                Where
+              </span>
+              <div className="flex items-center gap-1.5">
                 <input
                   type="text"
-                  placeholder="Type city, suburb, hotel, or country (e.g. Camps Bay, Sandton, Dubai)..."
+                  list="stay-search-suggestions"
+                  placeholder="Search residence, suburb (Rivonia, Bryanston), or amenity..."
                   value={searchQuery}
                   onChange={(e) => {
                     setSearchQuery(e.target.value);
-                    if (e.target.value.trim()) {
-                      setSelectedGlobalRegion('all');
-                      setSelectedCity('all');
-                    }
+                    setSelectedGlobalRegion('all');
+                    setSelectedCity('all');
                   }}
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') {
@@ -817,481 +880,111 @@ export const GuestView: React.FC<GuestViewProps> = ({
                       document.getElementById('residences-grid')?.scrollIntoView({ behavior: 'smooth' });
                     }
                   }}
-                  className="w-full pl-9 pr-8 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:bg-white focus:outline-emerald-600 transition-colors"
+                  className="w-full bg-transparent border-none p-0 text-xs sm:text-sm font-bold text-slate-900 placeholder:text-slate-400 placeholder:font-normal focus:outline-none focus:ring-0"
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 text-xs font-bold cursor-pointer"
+                    className="text-slate-400 hover:text-slate-700 text-xs font-bold cursor-pointer p-0.5"
                     title="Clear search"
                   >
                     ✕
                   </button>
                 )}
               </div>
+              <datalist id="stay-search-suggestions">
+                <option value="Rivonia Laxe (Rivonia, Sandton)" />
+                <option value="17onBuffalo (Bryanston & Morningside)" />
+                <option value="Rivonia, Sandton" />
+                <option value="Bryanston, Sandton" />
+                <option value="Sandton, Johannesburg" />
+                <option value="Solar & Inverter Backup" />
+                <option value="Self Check-in Smart Lock" />
+                <option value="ScopeBridge Direct" />
+              </datalist>
             </div>
           </div>
 
-          {/* Check-In Date */}
-          <div className="md:col-span-2 space-y-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <CalendarDays className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Check-In</span>
-            </label>
-            <input
-              type="date"
-              value={checkInDate}
-              onChange={(e) => handleCheckInDateChange(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:outline-emerald-600 cursor-pointer"
-            />
-          </div>
-
-          {/* Check-Out Date */}
-          <div className="md:col-span-2 space-y-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <CalendarDays className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Check-Out</span>
-            </label>
-            <input
-              type="date"
-              value={checkOutDate}
-              min={checkInDate}
-              onChange={(e) => handleCheckOutDateChange(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:bg-white focus:outline-emerald-600 cursor-pointer"
-            />
-          </div>
-
-          {/* Stay Nights Calculator */}
-          <div className="md:col-span-3 space-y-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-emerald-950 flex items-center justify-between">
-              <span>Stay Duration</span>
-              <span className="text-[10px] text-emerald-700 font-bold bg-emerald-100 px-1.5 py-0.5 rounded">
-                ⚡ Auto Nights
-              </span>
-            </label>
-            <div className="flex items-center gap-2">
-              <select
-                aria-label="Stay Nights"
-                value={calculatedNights}
-                onChange={(e) => handleStayNightsSelect(Number(e.target.value))}
-                className="flex-1 px-3 py-2 bg-emerald-50 border border-emerald-300 rounded-xl text-xs font-black text-emerald-950 focus:outline-hidden cursor-pointer"
-                title="Select number of nights"
-              >
-                <option value={1}>1 Night Stay</option>
-                <option value={2}>2 Nights Stay</option>
-                <option value={3}>3 Nights (Weekend)</option>
-                <option value={4}>4 Nights Stay</option>
-                <option value={5}>5 Nights (Business)</option>
-                <option value={7}>7 Nights (1 Week)</option>
-                <option value={10}>10 Nights Stay</option>
-                <option value={14}>14 Nights (2 Weeks)</option>
-                <option value={21}>21 Nights Stay</option>
-                <option value={30}>30 Nights (Monthly)</option>
-              </select>
-              <div className="px-2.5 py-2 rounded-xl bg-emerald-900 text-white text-xs font-black shrink-0">
-                {calculatedNights}N
+          {/* 2. Dates / When */}
+          <div className="md:col-span-4 flex items-center gap-3 px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl">
+            <CalendarDays className="w-4 h-4 text-emerald-600 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-1 mb-1 leading-none">
+                <span className="text-[10px] font-black uppercase tracking-wider text-slate-500">
+                  When
+                </span>
+                <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.5 rounded-full">
+                  {calculatedNights} Night{calculatedNights > 1 ? 's' : ''}
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-800">
+                <input
+                  type="date"
+                  value={checkInDate}
+                  onChange={(e) => handleCheckInDateChange(e.target.value)}
+                  className="bg-transparent border-none p-0 text-xs font-bold text-slate-900 focus:outline-none cursor-pointer w-[105px]"
+                />
+                <span className="text-slate-400 font-normal">→</span>
+                <input
+                  type="date"
+                  value={checkOutDate}
+                  min={checkInDate}
+                  onChange={(e) => handleCheckOutDateChange(e.target.value)}
+                  className="bg-transparent border-none p-0 text-xs font-bold text-slate-900 focus:outline-none cursor-pointer w-[105px]"
+                />
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Row 2: Accommodation Type, Room Type, Channel Source, and Search Action */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 pt-2 border-t border-slate-100">
-          {/* Accommodation Type */}
-          <div className="md:col-span-3 space-y-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <Building2 className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Accommodation Type</span>
-            </label>
-            <select
-              value={selectedAccommodationType}
-              onChange={(e) => setSelectedAccommodationType(e.target.value)}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-emerald-600 cursor-pointer"
+          {/* 3. Action Buttons: Filters & Search */}
+          <div className="md:col-span-3 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowFilterDrawer(!showFilterDrawer)}
+              className={`px-3 py-3 rounded-2xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 cursor-pointer shrink-0 ${
+                showFilterDrawer || activeFiltersCount > 0
+                  ? 'bg-emerald-50 border-emerald-400 text-emerald-900 font-extrabold shadow-xs'
+                  : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+              }`}
+              title="Advanced Filters"
             >
-              <option value="all">🏨 All Holiday Accommodation Types</option>
-              <option value="hotel">🏢 Luxury Hotel & Boutique Suites</option>
-              <option value="villa">🏖️ Private Beachfront & Pool Villa</option>
-              <option value="safari">🦁 Safari & Game Reserve Lodge</option>
-              <option value="apartment">🏙️ Serviced Executive Apartment</option>
-              <option value="penthouse">🛋️ Penthouse & Sky Loft Suite</option>
-              <option value="bnb">☕ Bed & Breakfast / Estate</option>
-              <option value="resort">🏡 Holiday Resort & Country Estate</option>
-            </select>
-          </div>
+              <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Filters</span>
+              {activeFiltersCount > 0 && (
+                <span className="w-4 h-4 rounded-full bg-emerald-600 text-white text-[10px] flex items-center justify-center font-bold">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
 
-          {/* Room / Suite Type */}
-          <div className="md:col-span-3 space-y-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <BedDouble className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Room / Suite Type</span>
-            </label>
-            <select
-              value={selectedRoomType}
-              onChange={(e) => setSelectedRoomType(e.target.value)}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-emerald-600 cursor-pointer"
-            >
-              <option value="all">🛏️ All Suite & Room Types</option>
-              <option value="master_suite">👑 Master En-Suite Executive</option>
-              <option value="deluxe_room">🛌 Deluxe King / Queen Room</option>
-              <option value="studio">💻 Executive Workstation Studio</option>
-              <option value="family_room">👨‍👩‍👧 Family Multi-Bedroom Suite</option>
-              <option value="entire_unit">🏡 Entire Residence / Unit</option>
-            </select>
-          </div>
-
-          {/* Channel Filter */}
-          <div className="md:col-span-3 space-y-1">
-            <label className="block text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-              <Globe className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Source Channel</span>
-            </label>
-            <select
-              value={selectedChannelFilter}
-              onChange={(e) => setSelectedChannelFilter(e.target.value)}
-              className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:bg-white focus:outline-emerald-600 cursor-pointer"
-            >
-              <option value="all">🌐 All Channels & Direct</option>
-              <option value="ScopeBridge Direct">🟢 ScopeBridge Direct (Host Official)</option>
-              <option value="Booking.com">🔵 Booking.com Channel</option>
-              <option value="Airbnb">🔴 Airbnb Superhost Channel</option>
-              <option value="Agoda">🟡 Agoda Global Channel</option>
-              <option value="Expedia">🟣 Expedia Partner Channel</option>
-              <option value="LekkeSlaap">🟠 LekkeSlaap SA Verified</option>
-              <option value="SafariNow">🦏 SafariNow Safari Channel</option>
-              <option value="Vrbo">🧭 Vrbo Vacation Channel</option>
-            </select>
-          </div>
-
-          {/* Search Button */}
-          <div className="md:col-span-3 flex items-end">
             <button
               type="button"
               onClick={() => {
                 document.getElementById('residences-grid')?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 active:scale-[0.99] text-white font-black text-xs rounded-xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
+              className="flex-1 py-3 px-4 bg-gradient-to-r from-emerald-700 to-teal-800 hover:from-emerald-600 hover:to-teal-700 active:scale-[0.99] text-white font-black text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Search className="w-4 h-4 text-amber-300" />
-              <span>Search All Channels ({filteredProperties.length})</span>
+              <Search className="w-4 h-4 text-amber-300 shrink-0" />
+              <span className="truncate">Search ({filteredProperties.length})</span>
             </button>
           </div>
         </div>
 
-        {/* Row 3: Active Results Summary Banner & Breakdown */}
-        <div className="p-3 bg-gradient-to-r from-emerald-950 via-slate-900 to-emerald-950 rounded-2xl text-white flex flex-wrap items-center justify-between gap-3 text-xs border border-emerald-800/40">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span className="font-extrabold text-slate-200">
-              Found <strong className="text-emerald-300 font-mono text-sm">{filteredProperties.length}</strong> Accommodations
-              {searchQuery ? ` matching "${searchQuery}"` : ''} for{' '}
-              <strong className="text-amber-300">{calculatedNights} Night{calculatedNights > 1 ? 's' : ''}</strong>{' '}
-              ({checkInDate} → {checkOutDate})
-            </span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="text-[10px] font-bold text-slate-400">Channels Connected & Aggregated:</span>
-            <span className="text-[10px] bg-emerald-900/80 text-emerald-200 px-2 py-0.5 rounded-full border border-emerald-700">
-              ✓ ScopeBridge Direct
-            </span>
-            <span className="text-[10px] bg-blue-900/80 text-blue-200 px-2 py-0.5 rounded-full border border-blue-700">
-              ✓ Booking.com
-            </span>
-            <span className="text-[10px] bg-rose-900/80 text-rose-200 px-2 py-0.5 rounded-full border border-rose-700">
-              ✓ Airbnb
-            </span>
-            <span className="text-[10px] bg-amber-900/80 text-amber-200 px-2 py-0.5 rounded-full border border-amber-700">
-              ✓ LekkeSlaap
-            </span>
-            <span className="text-[10px] bg-sky-900/80 text-sky-200 px-2 py-0.5 rounded-full border border-sky-700">
-              ✓ Expedia
-            </span>
-            <span className="text-[10px] bg-teal-900/80 text-teal-200 px-2 py-0.5 rounded-full border border-teal-700">
-              ✓ SafariNow
-            </span>
-            <span className="text-[10px] bg-indigo-900/80 text-indigo-200 px-2 py-0.5 rounded-full border border-indigo-700">
-              ✓ Agoda
-            </span>
-            <span className="text-[10px] bg-purple-900/80 text-purple-200 px-2 py-0.5 rounded-full border border-purple-700">
-              ✓ Trip.com
-            </span>
-            <span className="text-[10px] bg-yellow-900/80 text-yellow-200 px-2 py-0.5 rounded-full border border-yellow-700">
-              ✓ Marriott Bonvoy
-            </span>
-            <span className="text-[10px] bg-emerald-800/80 text-emerald-100 px-2 py-0.5 rounded-full border border-emerald-600">
-              ✓ TripAdvisor
-            </span>
-          </div>
-        </div>
-
-        {/* Row 4: Filters Trigger & View Mode Switcher */}
-        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-slate-100">
-          {/* Flexible Filters trigger */}
-          <button
-            onClick={() => setShowFilterDrawer(!showFilterDrawer)}
-            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
-              showFilterDrawer ||
-              maxPrice < 5000 ||
-              filterSelfCheckIn ||
-              filterParking ||
-              filterWifi ||
-              filterKitchen ||
-              filterPetFriendly ||
-              filterFamilyFriendly ||
-              filterSolar
-                ? 'bg-emerald-50 border-emerald-400 text-emerald-900'
-                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
-            }`}
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Filters</span>
-            {(filterSelfCheckIn ||
-              filterParking ||
-              filterWifi ||
-              filterKitchen ||
-              filterPetFriendly ||
-              filterFamilyFriendly ||
-              filterSolar ||
-              maxPrice < 5000) && <span className="w-2 h-2 bg-emerald-600 rounded-full"></span>}
-          </button>
-
-          {/* View Switcher (Grid vs Map View) */}
-          <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                viewMode === 'grid'
-                  ? 'bg-white text-slate-900 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              Listings ({filteredProperties.length})
-            </button>
-            <button
-              onClick={() => setViewMode('map')}
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold transition-all cursor-pointer ${
-                viewMode === 'map'
-                  ? 'bg-emerald-700 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5" />
-              <span>Map View</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Real Live Location Search Corridors (Bryanston, Sandton, Ferndale, Johannesburg, Cape Town, London, Dubai) */}
-        <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="text-slate-800 font-extrabold text-[11px] flex items-center gap-1 mr-1">
-            <MapPin className="w-3.5 h-3.5 text-emerald-600" />
-            Live Search Corridors:
-          </span>
-          {[
-            { label: 'Bryanston (17onBuffalo Suites)', query: 'Bryanston' },
-            { label: 'Sandton (Rivonia & Executive)', query: 'Sandton' },
-            { label: 'Ferndale (Republic Lofts)', query: 'Ferndale' },
-            { label: 'Johannesburg (All Suburbs)', query: 'Johannesburg' },
-            { label: 'Cape Town (Camps Bay & Waterfront)', query: 'Cape Town' },
-            { label: 'London (Mayfair Executive Mews)', query: 'London' },
-            { label: 'Dubai (Burj Khalifa Penthouse)', query: 'Dubai' },
-          ].map((loc) => {
-            const isActive = searchQuery.toLowerCase().includes(loc.query.toLowerCase());
-            return (
+        {/* Collapsible Secondary Filters (Accommodation type, Room type, Channel Source) */}
+        {showFilterDrawer && (
+          <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200/90 space-y-3 pt-3 transition-all animate-fadeIn">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-200/60">
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                <SlidersHorizontal className="w-3.5 h-3.5 text-emerald-600" />
+                Advanced Stay & Channel Filters
+              </span>
               <button
-                key={loc.query}
                 type="button"
                 onClick={() => {
-                  setSearchQuery(loc.query);
-                  setSelectedGlobalRegion('all');
-                  setSelectedCity('all');
-                  document.getElementById('residences-grid')?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className={`px-2.5 py-1 rounded-lg font-bold text-[11px] transition-all cursor-pointer border ${
-                  isActive
-                    ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs ring-2 ring-emerald-400'
-                    : 'bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-900 border-slate-200'
-                }`}
-                title={`Filter real suites in ${loc.label}`}
-              >
-                📍 {loc.label}
-              </button>
-            );
-          })}
-          {searchQuery && (
-            <button
-              type="button"
-              onClick={() => setSearchQuery('')}
-              className="text-[11px] text-rose-600 hover:text-rose-800 hover:underline font-bold ml-1 cursor-pointer"
-              title="Reset location search"
-            >
-              ✕ Reset
-            </button>
-          )}
-        </div>
-
-        {/* Direct Channel Search Filter Bar */}
-        <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-1.5 text-xs">
-          <span className="text-slate-700 font-extrabold text-[11px] flex items-center gap-1 mr-1">
-            <Globe className="w-3.5 h-3.5 text-emerald-700" />
-            Search Direct by Channel:
-          </span>
-          {[
-            { id: 'all', label: 'All Channels' },
-            { id: 'ScopeBridge Direct', label: '✓ ScopeBridge Direct (All Registered)' },
-            { id: 'Booking.com', label: 'Booking.com' },
-            { id: 'Airbnb', label: 'Airbnb' },
-            { id: 'Agoda', label: 'Agoda' },
-            { id: 'Trip.com', label: 'Trip.com' },
-            { id: 'LekkeSlaap', label: 'LekkeSlaap' },
-            { id: 'Expedia', label: 'Expedia' },
-          ].map((ch) => (
-            <button
-              key={ch.id}
-              type="button"
-              onClick={() => setSelectedChannelFilter(ch.id)}
-              className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer ${
-                selectedChannelFilter === ch.id
-                  ? 'bg-emerald-700 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-900 border border-slate-200'
-              }`}
-            >
-              {ch.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Google Discovery Quick Links Bar */}
-        <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-slate-500 font-semibold text-[11px] flex items-center gap-1">
-            <Globe className="w-3 h-3 text-blue-600" />
-            Google Travel Tools:
-          </span>
-
-          <a
-            href={`https://www.google.com/search?q=${encodeURIComponent((searchQuery.trim() || 'executive luxury') + ' accommodation hotel stays')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full font-medium transition-all bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-200 cursor-pointer"
-          >
-            <Search className="w-3 h-3" />
-            <span>Google Accommodations</span>
-            <ExternalLink className="w-2.5 h-2.5 text-blue-500" />
-          </a>
-
-          <a
-            href={`https://www.google.com/maps/search/${encodeURIComponent(searchQuery.trim() || 'hotels and vacation stays')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full font-medium transition-all bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 cursor-pointer"
-          >
-            <MapPin className="w-3 h-3" />
-            <span>Google Maps</span>
-            <ExternalLink className="w-2.5 h-2.5 text-emerald-500" />
-          </a>
-
-          <a
-            href={`https://www.google.com/travel/flights?q=${encodeURIComponent(searchQuery.trim() || 'flights')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full font-medium transition-all bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-200 cursor-pointer"
-          >
-            <Plane className="w-3 h-3" />
-            <span>Google Flights</span>
-            <ExternalLink className="w-2.5 h-2.5 text-sky-500" />
-          </a>
-
-          <a
-            href={`https://www.google.com/search?q=${encodeURIComponent((searchQuery.trim() || 'local area') + ' best restaurants and dining guide')}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full font-medium transition-all bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 cursor-pointer"
-          >
-            <Utensils className="w-3 h-3" />
-            <span>Local Dining on Google</span>
-            <ExternalLink className="w-2.5 h-2.5 text-amber-500" />
-          </a>
-        </div>
-
-        {/* Proximity Quick Badges */}
-        <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-slate-500 font-semibold text-[11px] flex items-center gap-1">
-            <MapPin className="w-3 h-3 text-emerald-600" />
-            Proximity Focus:
-          </span>
-
-          <button
-            onClick={() =>
-              setTargetLandmark(
-                targetLandmark === 'shopping' ? 'all' : 'shopping'
-              )
-            }
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-medium transition-all cursor-pointer ${
-              targetLandmark === 'shopping'
-                ? 'bg-indigo-600 text-white shadow-xs font-bold'
-                : 'bg-indigo-50 text-indigo-800 hover:bg-indigo-100 border border-indigo-200'
-            }`}
-          >
-            <ShoppingBag className="w-3 h-3" />
-            <span>Near Shopping & Malls (&lt;1km)</span>
-          </button>
-
-          <button
-            onClick={() => setTargetLandmark(targetLandmark === 'business' ? 'all' : 'business')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-medium transition-all cursor-pointer ${
-              targetLandmark === 'business'
-                ? 'bg-rose-600 text-white shadow-xs font-bold'
-                : 'bg-rose-50 text-rose-800 hover:bg-rose-100 border border-rose-200'
-            }`}
-          >
-            <Building className="w-3 h-3" />
-            <span>Near Business Hubs (&lt;2.5km)</span>
-          </button>
-
-          <button
-            onClick={() => setTargetLandmark(targetLandmark === 'transit' ? 'all' : 'transit')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-medium transition-all cursor-pointer ${
-              targetLandmark === 'transit'
-                ? 'bg-cyan-600 text-white shadow-xs font-bold'
-                : 'bg-cyan-50 text-cyan-800 hover:bg-cyan-100 border border-cyan-200'
-            }`}
-          >
-            <Car className="w-3 h-3" />
-            <span>Near Transit & Shuttles</span>
-          </button>
-
-          <button
-            onClick={() => setTargetLandmark(targetLandmark === 'dining' ? 'all' : 'dining')}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-medium transition-all cursor-pointer ${
-              targetLandmark === 'dining'
-                ? 'bg-amber-600 text-white shadow-xs font-bold'
-                : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200'
-            }`}
-          >
-            <Coffee className="w-3 h-3" />
-            <span>Near Dining & Cafes</span>
-          </button>
-
-          {targetLandmark !== 'all' && (
-            <button
-              onClick={() => setTargetLandmark('all')}
-              className="text-[11px] text-slate-500 hover:text-slate-800 font-bold underline ml-1 cursor-pointer"
-            >
-              Clear proximity
-            </button>
-          )}
-        </div>
-
-        {/* Flexible Filters Drawer Panel */}
-        {showFilterDrawer && (
-          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4 pt-4 mt-2">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
-                Search & Amenity Filters
-              </h3>
-              <button
-                onClick={() => {
+                  setSelectedAccommodationType('all');
+                  setSelectedRoomType('all');
+                  setSelectedChannelFilter('all');
                   setMaxPrice(5000);
                   setFilterSelfCheckIn(false);
                   setFilterParking(false);
@@ -1301,14 +994,78 @@ export const GuestView: React.FC<GuestViewProps> = ({
                   setFilterFamilyFriendly(false);
                   setFilterSolar(false);
                 }}
-                className="text-[11px] text-slate-500 hover:text-emerald-700 font-bold cursor-pointer"
+                className="text-[11px] font-bold text-slate-500 hover:text-emerald-700 cursor-pointer"
               >
-                Reset All Filters
+                Reset Filters
               </button>
             </div>
 
-            {/* Price slider */}
-            <div className="space-y-1.5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {/* Accommodation Type */}
+              <div className="space-y-1">
+                <label className="block text-[10px] font-extrabold uppercase text-slate-600">
+                  Accommodation Type
+                </label>
+                <select
+                  value={selectedAccommodationType}
+                  onChange={(e) => setSelectedAccommodationType(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-emerald-600 cursor-pointer"
+                >
+                  <option value="all">🏨 All Accommodation Types</option>
+                  <option value="hotel">🏢 Luxury Hotel & Suites</option>
+                  <option value="villa">🏖️ Private Beach & Pool Villa</option>
+                  <option value="safari">🦁 Safari & Game Lodge</option>
+                  <option value="apartment">🏙️ Serviced Apartment</option>
+                  <option value="penthouse">🛋️ Penthouse & Loft</option>
+                  <option value="bnb">☕ Bed & Breakfast</option>
+                  <option value="resort">🏡 Holiday Resort Estate</option>
+                </select>
+              </div>
+
+              {/* Room / Suite Type */}
+              <div className="space-y-1">
+                <label className="block text-[10px] font-extrabold uppercase text-slate-600">
+                  Room / Suite Type
+                </label>
+                <select
+                  value={selectedRoomType}
+                  onChange={(e) => setSelectedRoomType(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-emerald-600 cursor-pointer"
+                >
+                  <option value="all">🛏️ All Suite & Room Types</option>
+                  <option value="master_suite">👑 Master En-Suite</option>
+                  <option value="deluxe_room">🛌 Deluxe King/Queen</option>
+                  <option value="studio">💻 Executive Studio</option>
+                  <option value="family_room">👨‍👩‍👧 Family Suite</option>
+                  <option value="entire_unit">🏡 Entire Residence</option>
+                </select>
+              </div>
+
+              {/* Channel Filter */}
+              <div className="space-y-1">
+                <label className="block text-[10px] font-extrabold uppercase text-slate-600">
+                  OTA Channel Source
+                </label>
+                <select
+                  value={selectedChannelFilter}
+                  onChange={(e) => setSelectedChannelFilter(e.target.value)}
+                  className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-emerald-600 cursor-pointer"
+                >
+                  <option value="all">🌐 All Channels & Direct</option>
+                  <option value="ScopeBridge Direct">🟢 ScopeBridge Direct (Host Official)</option>
+                  <option value="Booking.com">🔵 Booking.com Channel</option>
+                  <option value="Airbnb">🔴 Airbnb Superhost Channel</option>
+                  <option value="Agoda">🟡 Agoda Global Channel</option>
+                  <option value="Expedia">🟣 Expedia Partner Channel</option>
+                  <option value="LekkeSlaap">🟠 LekkeSlaap SA Verified</option>
+                  <option value="SafariNow">🦏 SafariNow Safari Channel</option>
+                  <option value="Vrbo">🧭 Vrbo Vacation Channel</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Price Range Slider */}
+            <div className="pt-2 border-t border-slate-200/60 space-y-1.5">
               <div className="flex justify-between text-xs font-semibold text-slate-700">
                 <span>Maximum Nightly Rate:</span>
                 <span className="font-bold text-emerald-800 text-sm">
@@ -1331,8 +1088,8 @@ export const GuestView: React.FC<GuestViewProps> = ({
               </div>
             </div>
 
-            {/* Checkbox pills */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+            {/* Key Amenities */}
+            <div className="pt-2 border-t border-slate-200/60 grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               <label className="flex items-center gap-2 p-2 bg-white rounded-lg border border-slate-200 cursor-pointer hover:border-emerald-400">
                 <input
                   type="checkbox"
@@ -1340,7 +1097,7 @@ export const GuestView: React.FC<GuestViewProps> = ({
                   onChange={(e) => setFilterSelfCheckIn(e.target.checked)}
                   className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Self check-in</span>
               </label>
 
@@ -1351,7 +1108,7 @@ export const GuestView: React.FC<GuestViewProps> = ({
                   onChange={(e) => setFilterParking(e.target.checked)}
                   className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
-                <Car className="w-3.5 h-3.5 text-emerald-600" />
+                <Car className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Free Parking</span>
               </label>
 
@@ -1362,7 +1119,7 @@ export const GuestView: React.FC<GuestViewProps> = ({
                   onChange={(e) => setFilterWifi(e.target.checked)}
                   className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
-                <Wifi className="w-3.5 h-3.5 text-emerald-600" />
+                <Wifi className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Fibre WiFi</span>
               </label>
 
@@ -1373,7 +1130,7 @@ export const GuestView: React.FC<GuestViewProps> = ({
                   onChange={(e) => setFilterKitchen(e.target.checked)}
                   className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
-                <Utensils className="w-3.5 h-3.5 text-emerald-600" />
+                <Utensils className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Full Kitchen</span>
               </label>
 
@@ -1384,7 +1141,7 @@ export const GuestView: React.FC<GuestViewProps> = ({
                   onChange={(e) => setFilterPetFriendly(e.target.checked)}
                   className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
-                <PawPrint className="w-3.5 h-3.5 text-emerald-600" />
+                <PawPrint className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Pet-friendly</span>
               </label>
 
@@ -1395,7 +1152,7 @@ export const GuestView: React.FC<GuestViewProps> = ({
                   onChange={(e) => setFilterFamilyFriendly(e.target.checked)}
                   className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
-                <Users className="w-3.5 h-3.5 text-emerald-600" />
+                <Users className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                 <span>Family-friendly</span>
               </label>
 
@@ -1406,12 +1163,67 @@ export const GuestView: React.FC<GuestViewProps> = ({
                   onChange={(e) => setFilterSolar(e.target.checked)}
                   className="rounded text-emerald-600 focus:ring-emerald-500"
                 />
-                <SunMedium className="w-3.5 h-3.5 text-amber-500" />
+                <SunMedium className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                 <span className="font-semibold text-slate-800">Solar & Inverter Backup</span>
               </label>
             </div>
           </div>
         )}
+
+        {/* 3. Live Results Status Bar & View Mode Toggle */}
+        <div className="px-4 py-2.5 bg-slate-900 rounded-2xl text-white flex flex-wrap items-center justify-between gap-3 text-xs shadow-xs">
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+            <span className="text-[11px] font-bold text-slate-200">
+              Found <strong className="text-emerald-300 font-mono text-xs">{filteredProperties.length}</strong> Verified Accommodation{filteredProperties.length !== 1 ? "s" : ""}
+              {searchQuery ? " for \"" + searchQuery + "\"" : ""} · <span className="text-amber-300 font-bold">{calculatedNights} Night{calculatedNights > 1 ? "s" : ""}</span> ({checkInDate} → {checkOutDate})
+            </span>
+            {(searchQuery || activeFiltersCount > 0) && (
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="text-[10px] text-emerald-300 hover:text-white underline font-bold cursor-pointer ml-1"
+              >
+                Reset Search
+              </button>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            <div className="hidden lg:flex items-center gap-1.5 text-[10px] font-bold text-slate-400">
+              <span>Synced Channels:</span>
+              <span className="px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800">Direct</span>
+              <span className="px-1.5 py-0.5 rounded bg-blue-950 text-blue-300 border border-blue-800">Booking.com</span>
+              <span className="px-1.5 py-0.5 rounded bg-rose-950 text-rose-300 border border-rose-800">Airbnb</span>
+              <span className="px-1.5 py-0.5 rounded bg-amber-950 text-amber-300 border border-amber-800">LekkeSlaap</span>
+              <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">Expedia</span>
+            </div>
+
+            <div className="flex items-center bg-slate-800 p-0.5 rounded-xl border border-slate-700 text-xs">
+              <button
+                onClick={() => setViewMode("grid")}
+                className={"px-3 py-1 rounded-lg font-bold transition-all cursor-pointer " + (
+                  viewMode === "grid"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "text-slate-300 hover:text-white"
+                )}
+              >
+                Listings ({filteredProperties.length})
+              </button>
+              <button
+                onClick={() => setViewMode("map")}
+                className={"flex items-center gap-1 px-3 py-1 rounded-lg font-bold transition-all cursor-pointer " + (
+                  viewMode === "map"
+                    ? "bg-emerald-600 text-white shadow-xs"
+                    : "text-slate-300 hover:text-white"
+                )}
+              >
+                <Compass className="w-3.5 h-3.5" />
+                <span>Map View</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Main View: Grid vs Interactive Map */}
@@ -1426,7 +1238,7 @@ export const GuestView: React.FC<GuestViewProps> = ({
         />
       ) : (
         /* Listings Grid View */
-        <div className="space-y-4">
+        <div id="residences-grid" className="space-y-4 scroll-mt-6">
           <div className="flex items-center justify-between text-xs text-slate-500 px-1">
             <span>
               Showing <strong className="text-slate-800">{filteredProperties.length}</strong>{' '}
@@ -1445,11 +1257,19 @@ export const GuestView: React.FC<GuestViewProps> = ({
               <div className="space-y-1">
                 <h3 className="text-sm font-bold text-slate-900">No matching residences found</h3>
                 <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  We couldn't find any properties matching "{searchQuery}" on our list. Would you like to check real-time availability on Google?
+                  We couldn't find any properties matching "{searchQuery}" with current filters. Reset filters to see all available verified residences.
                 </p>
               </div>
               
               <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="px-4 py-2 bg-emerald-800 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition-all cursor-pointer shadow-sm flex items-center gap-1.5"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                  <span>View All Available Stays ({allPropertiesPool.length})</span>
+                </button>
                 <button
                   onClick={() => {
                     const query = searchQuery.trim() || 'executive luxury stays';

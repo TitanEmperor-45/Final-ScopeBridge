@@ -72,6 +72,7 @@ import { LiveChatModal } from './components/guest/LiveChatModal';
 import { OfflineStatusBanner } from './components/common/OfflineStatusBanner';
 import { OpenWaSupportModal } from './components/common/OpenWaSupportModal';
 import { installGlobalOpenWaLinkInterceptor } from './lib/openwaBridge';
+import { syncBookingToChannels } from './lib/channelSync';
 import {
   syncOfflinePlatformData,
   readOfflinePlatformData,
@@ -1334,12 +1335,14 @@ export default function App() {
     };
     handleUpdateCalendarEvents((prev) => [newCalEvent, ...prev]);
 
-    // Trigger automatic channel synchronization
-    fetch('/api/channels/sync-booking', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ booking: newBooking }),
-    }).catch(err => console.error("OTA sync trigger failed:", err));
+    // Trigger standardized multi-channel synchronization directly to Airbnb, Booking.com & connected OTAs
+    syncBookingToChannels(newBooking)
+      .then((res) => {
+        console.log(`[ChannelSync] ${res.message} (latency: ${res.channelResults?.airbnb?.latencyMs || 0}ms)`);
+      })
+      .catch((err) => {
+        console.error('[ChannelSync] Automated sync error:', err);
+      });
 
 
     // Automatically trigger cleaning task for check-out day (Owner Operations)

@@ -1304,6 +1304,46 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
                   </span>
                 </div>
 
+                {/* Airbnb Outbound Export Feed */}
+                <div className="p-3 bg-rose-50/70 rounded-xl border border-rose-200 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-bold text-rose-900">
+                      Step 1: Your ScopeBridge Export Feed (Paste into Airbnb)
+                    </span>
+                    <span className="text-[10px] bg-rose-100 text-rose-800 font-mono font-bold px-1.5 py-0.5 rounded">
+                      Live Feed
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-rose-800 leading-relaxed">
+                    Paste this feed URL into your Airbnb listing under <strong>Pricing and availability → Calendar sync → Import calendar</strong> so Airbnb automatically blocks all dates booked on ScopeBridge.
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      readOnly
+                      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/api/calendar/export.ics?propertyId=${activeProperty?.id || 'all'}`}
+                      className="w-full bg-white border border-rose-300 rounded-lg px-2.5 py-1.5 text-[11px] font-mono text-rose-950"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/api/calendar/export.ics?propertyId=${activeProperty?.id || 'all'}`;
+                        navigator.clipboard.writeText(url);
+                        alert("Copied ScopeBridge Export iCal link for Airbnb! Paste this in your Airbnb Listing under Pricing & Availability -> Calendar sync -> Import calendar.");
+                      }}
+                      className="px-3 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-[10px] font-bold shrink-0 transition-colors cursor-pointer"
+                    >
+                      Copy Link
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5 pt-1">
+                  <span className="text-[11px] font-bold text-slate-700 block">
+                    Step 2: Airbnb Inbound Listing Feeds (Imported into ScopeBridge)
+                  </span>
+                </div>
+
                 <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
                   {[
                     { name: 'Rev Lux 2', url: 'https://www.airbnb.co.za/calendar/ical/1696949048961628947.ics?t=580cc049fe804fdaa74c019f501637f5', blocked: ['2026-10-18', '2026-10-19'] },
