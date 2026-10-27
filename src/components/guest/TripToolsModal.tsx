@@ -64,7 +64,7 @@ export const TripToolsModal: React.FC<TripToolsModalProps> = ({
                     : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
                 }`}
               >
-                {b.propertyTitle.split(' ')[0]} ({b.checkInDate})
+                {(b.propertyTitle || 'Stay').split(' ')[0]} ({b.checkInDate || ''})
               </button>
             ))}
           </div>

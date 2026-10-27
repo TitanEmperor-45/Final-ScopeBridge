@@ -2129,6 +2129,7 @@ export default function App() {
                 currentUser={currentUser}
                 cleaningTasks={cleaningTasks}
                 promos={promos}
+                onUpdatePromos={handleUpdatePromos}
                 registeredUsers={registeredUsers}
                 onUpdateRegisteredUsers={handleUpdateRegisteredUsers}
                 onDeleteUserAccount={handleDeleteUser}

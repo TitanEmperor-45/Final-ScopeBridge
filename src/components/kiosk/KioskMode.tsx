@@ -692,9 +692,9 @@ export const KioskMode: React.FC<KioskModeProps> = ({
   const currencyInfo = CURRENCY_RATES[selectedCurrency] || CURRENCY_RATES.ZAR;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+    <div className="min-h-screen bg-slate-800 text-white flex flex-col">
       {/* Kiosk Header / Top Bar */}
-      <header className="bg-slate-900 border-b border-slate-800 px-6 py-4 space-y-3">
+      <header className="bg-slate-700 border-b border-slate-600 px-6 py-4 space-y-3 shadow-md">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <div className="w-11 h-11 rounded-2xl overflow-hidden shadow-lg border border-amber-500/30 flex-shrink-0 bg-amber-500">
@@ -703,12 +703,12 @@ export const KioskMode: React.FC<KioskModeProps> = ({
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-lg font-black tracking-tight text-white">ScopeBridg™ Reception Kiosk</h1>
-                <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+                <span className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
                   Dedicated Kiosk View
                 </span>
                 {kioskOperator && kioskOperator.username !== 'guest' && (
-                  <span className="bg-teal-500/20 text-teal-300 border border-teal-500/40 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1">
-                    <ShieldCheck className="w-3 h-3 text-amber-400" />
+                  <span className="bg-teal-500/20 text-teal-200 border border-teal-500/40 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-amber-300" />
                     <span>
                       Kiosk Operator: {kioskOperator.fullName || kioskOperator.name} (@{kioskOperator.username} •{' '}
                       {kioskOperator.createdByOwnerName
@@ -718,8 +718,8 @@ export const KioskMode: React.FC<KioskModeProps> = ({
                   </span>
                 )}
               </div>
-              <p className="text-xs text-slate-400">
-                Ferndale on Republic &amp; Oxford St • Admin Support &amp; OTP Desk: <strong className="text-amber-400 font-mono">+27 69 497 7018</strong>
+              <p className="text-xs text-slate-300">
+                Ferndale on Republic &amp; Oxford St • Admin Support &amp; OTP Desk: <strong className="text-amber-300 font-mono">+27 69 497 7018</strong>
               </p>
             </div>
           </div>
@@ -730,8 +730,8 @@ export const KioskMode: React.FC<KioskModeProps> = ({
               onClick={handleToggleFullscreen}
               className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
                 isFullscreen
-                  ? 'bg-teal-500/20 text-teal-300 border-teal-500/40 hover:bg-teal-500/30'
-                  : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700 hover:text-white'
+                  ? 'bg-teal-500/20 text-teal-200 border-teal-500/40 hover:bg-teal-500/30'
+                  : 'bg-slate-600 text-slate-100 border-slate-500 hover:bg-slate-500 hover:text-white'
               }`}
               title={isFullscreen ? 'Exit Full Screen Kiosk' : 'Enter Full Screen Kiosk Mode'}
             >
@@ -742,15 +742,15 @@ export const KioskMode: React.FC<KioskModeProps> = ({
               onClick={() => setActiveKioskTab('home')}
               className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                 activeKioskTab === 'home'
-                  ? 'bg-amber-500 text-slate-950 shadow-md'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                  ? 'bg-amber-500 text-slate-950 shadow-md font-extrabold'
+                  : 'bg-slate-600 text-slate-100 border border-slate-500 hover:bg-slate-500'
               }`}
             >
               Main Menu
             </button>
             <button
               onClick={onExitKiosk}
-              className="px-3.5 py-2 bg-red-600/20 text-red-400 border border-red-500/30 hover:bg-red-600/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+              className="px-3.5 py-2 bg-red-600/20 text-red-300 border border-red-500/40 hover:bg-red-600/30 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <LogOut className="w-4 h-4" /> Exit Kiosk
             </button>
@@ -758,7 +758,7 @@ export const KioskMode: React.FC<KioskModeProps> = ({
         </div>
 
         {/* Dedicated Kiosk Sub-Navigation Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-slate-800/80">
+        <div className="flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-slate-600/80">
           {[
             { id: 'home', label: '🏠 Kiosk Home' },
             { id: 'booked_rooms', label: '🏨 Booked Rooms & Status' },
@@ -777,8 +777,8 @@ export const KioskMode: React.FC<KioskModeProps> = ({
               onClick={() => setActiveKioskTab(tab.id as any)}
               className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
                 activeKioskTab === tab.id
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-800 hover:text-white'
+                  ? 'bg-emerald-600 text-white shadow-xs font-black'
+                  : 'bg-slate-600/90 text-slate-100 hover:bg-slate-500 hover:text-white border border-slate-550'
               }`}
             >
               {tab.label}
@@ -2227,20 +2227,7 @@ export const KioskMode: React.FC<KioskModeProps> = ({
                   </div>
                 )}
 
-                {/* Visible & Registered Channels on Selected Property */}
-                {currentWalkInProperty && (
-                  <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 space-y-1.5 text-[11px]">
-                    <div className="flex flex-wrap items-center gap-1.5">
-                      <span className="text-emerald-400 font-bold">📡 Visible Channels:</span>
-                      <span className="px-2 py-0.5 bg-emerald-600 text-white rounded text-[10px] font-bold">✓ ScopeBridge Direct</span>
-                      {(currentWalkInProperty.publishedChannels || ['ch-booking', 'ch-airbnb']).map((ch, idx) => (
-                        <span key={idx} className="px-2 py-0.5 bg-slate-800 text-emerald-300 rounded text-[10px] font-bold">
-                          ✓ {ch.replace('ch-', '').toUpperCase()}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+
 
                 {/* Calendar Date Selection with Automatic Stay Nights Update & Interactive Grid */}
                 <div className="p-4 bg-slate-950 rounded-2xl border border-emerald-800/50 space-y-3">

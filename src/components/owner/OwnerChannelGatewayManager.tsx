@@ -885,77 +885,7 @@ export const OwnerChannelGatewayManager: React.FC<OwnerChannelGatewayManagerProp
             </div>
           </div>
 
-          {/* ScopeBridg Platform Escrow & Direct Commission Payment */}
-          <div className="bg-slate-900 text-white rounded-2xl p-6 border border-slate-800 shadow-lg space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2.5">
-                <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                <div>
-                  <h4 className="font-bold text-white text-sm">ScopeBridg Main Admin Bank Account (Absa Escrow)</h4>
-                  <span className="text-[10px] text-slate-400">Direct wire clearing for channel commission, contractor fees &amp; deposit escrow</span>
-                </div>
-              </div>
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-mono font-bold px-2.5 py-1 rounded-full">
-                Acc: {adminBank.accountNumber}
-              </span>
-            </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-              <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-0.5">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">Bank Name</span>
-                <p className="font-bold text-white">{adminBank.bankName}</p>
-              </div>
-              <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-0.5">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">Account Holder</span>
-                <p className="font-bold text-white truncate">{adminBank.accountName}</p>
-              </div>
-              <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-0.5">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">Account Number</span>
-                <p className="font-mono font-black text-emerald-400">{adminBank.accountNumber}</p>
-              </div>
-              <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800 space-y-0.5">
-                <span className="text-[10px] text-slate-400 block uppercase font-bold">Branch Code</span>
-                <p className="font-mono font-bold text-white">{adminBank.branchCode}</p>
-              </div>
-            </div>
-
-            <div className="pt-2 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p className="text-[11px] text-slate-400">
-                Need to settle platform fees or artisan invoices? Make a direct EFT or pay via integrated card rails.
-              </p>
-              <button
-                type="button"
-                disabled={isPayingCommission}
-                onClick={async () => {
-                  setIsPayingCommission(true);
-                  try {
-                    const res = await fetch('/api/payments/process-real', {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({
-                        gatewayId: 'absa_direct_eft',
-                        amountZar: commissionAmount,
-                        purpose: `Platform Fee Settlement for ${selectedProperty.title}`,
-                        payerName: 'Mdluli Nhlanhla (Owner)',
-                        payerPhone: '+27821234567',
-                        targetBank: `${adminBank.bankName} (Acc: ${adminBank.accountNumber})`,
-                      }),
-                    });
-                    const data = await res.json();
-                    if (data.success) {
-                      setPayoutSuccessMsg(`Platform commission of R${data.amountZar} settled to Admin Absa Account (Ref: ${data.transactionId})!`);
-                    }
-                  } catch {
-                  } finally {
-                    setIsPayingCommission(false);
-                  }
-                }}
-                className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition-colors cursor-pointer shrink-0"
-              >
-                {isPayingCommission ? 'Settling...' : 'Pay Commission to Admin (R650)'}
-              </button>
-            </div>
-          </div>
 
           {/* Add Owner Bank Modal */}
           {isAddOwnerBankOpen && (

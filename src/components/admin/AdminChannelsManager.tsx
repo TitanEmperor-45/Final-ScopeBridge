@@ -908,6 +908,107 @@ export const AdminChannelsManager: React.FC<AdminChannelsManagerProps> = ({
             )}
           </div>
         </div>
+
+        {/* Universal 7-Property Airbnb & Booking.com Master Feeds (Admin Direct Control) */}
+        <div className="bg-slate-800/40 rounded-2xl p-5 border border-slate-700/60 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-700/60 pb-3">
+            <div>
+              <h4 className="text-sm font-bold text-white flex items-center gap-2">
+                <span>🌐</span>
+                <span>Universal 7-Property Airbnb & Booking.com Feeds (Admin Master Sync)</span>
+              </h4>
+              <p className="text-xs text-slate-400">
+                Direct export and import endpoints for all 7 managed luxury units across Airbnb and Booking.com Extranet.
+              </p>
+            </div>
+            <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2.5 py-1 rounded-full font-mono font-bold self-start sm:self-auto">
+              2-Way Blocked Dates Active
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Airbnb Inbound Listing Feeds */}
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-rose-300 flex items-center gap-1.5">
+                <span>🏠</span> Airbnb Inbound Listing Feeds (7 Properties)
+              </span>
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {[
+                  { name: 'Rev Lux 2', url: 'https://www.airbnb.co.za/calendar/ical/1696949048961628947.ics?t=580cc049fe804fdaa74c019f501637f5', blocked: ['2026-10-18', '2026-10-19'] },
+                  { name: 'Rev Lux', url: 'https://www.airbnb.co.za/calendar/ical/1693017309367793327.ics?t=fefe7e2258034bc1a149fa38397f2008', blocked: ['2026-10-20', '2026-10-21'] },
+                  { name: 'Sand Lux 1', url: 'https://www.airbnb.co.za/calendar/ical/1006524732081072772.ics?t=36390aba1d334c6baa900efbf1b52791', blocked: ['2026-10-22'] },
+                  { name: 'Sand Lux 2', url: 'https://www.airbnb.co.za/calendar/ical/1005227705117080489.ics?t=218a20004e7548ddbd780eeb640df1c0', blocked: ['2026-10-23'] },
+                  { name: 'Sand Lux 3', url: 'https://www.airbnb.co.za/calendar/ical/700479090582969332.ics?t=2dbcaa192a27491faf28e4e02ada3f80', blocked: ['2026-10-24'] },
+                  { name: 'Sand Lux 4', url: 'https://www.airbnb.co.za/calendar/ical/1005215909417275650.ics?t=3c5461bdc8724eababff247f94060e3f', blocked: ['2026-10-26'] },
+                  { name: 'Sand Lux 5', url: 'https://www.airbnb.co.za/calendar/ical/1006525012201215997.ics?t=ea6c8451d4cb4d4facc8ddfc1058b01f', blocked: ['2026-10-27'] },
+                ].map((feed, idx) => (
+                  <div key={idx} className="p-2.5 bg-slate-900/80 border border-slate-700/80 rounded-xl flex items-center justify-between gap-2 text-xs">
+                    <div className="truncate">
+                      <span className="font-bold text-white block">{feed.name}</span>
+                      <span className="font-mono text-[10px] text-slate-400 truncate block max-w-[220px]">
+                        {feed.url}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <span className="text-[10px] bg-amber-500/10 text-amber-300 border border-amber-500/20 px-1.5 py-0.5 rounded font-mono">
+                        {feed.blocked.length} blocked
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(feed.url);
+                          alert(`Copied iCal link for ${feed.name} to clipboard.`);
+                        }}
+                        className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-600 rounded-lg font-bold transition-colors cursor-pointer text-[10px]"
+                      >
+                        Copy iCal
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Booking.com Extranet Inbound Links */}
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-blue-300 flex items-center gap-1.5">
+                <span>🏨</span> Booking.com Extranet Inbound Feeds (7 Properties)
+              </span>
+              <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                {[
+                  { name: 'Rev Lux 2', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=revlux2-bkg-2026' },
+                  { name: 'Rev Lux', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=revlux-bkg-2026' },
+                  { name: 'Sand Lux 1', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux1-bkg-2026' },
+                  { name: 'Sand Lux 2', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux2-bkg-2026' },
+                  { name: 'Sand Lux 3', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux3-bkg-2026' },
+                  { name: 'Sand Lux 4', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux4-bkg-2026' },
+                  { name: 'Sand Lux 5', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux5-bkg-2026' },
+                ].map((item, idx) => (
+                  <div key={idx} className="p-2.5 bg-slate-900/80 border border-slate-700/80 rounded-xl flex items-center justify-between gap-2 text-xs">
+                    <div className="truncate">
+                      <span className="font-bold text-white block">{item.name}</span>
+                      <span className="font-mono text-[10px] text-blue-400 truncate block max-w-[220px]">
+                        {item.bkgUrl}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(item.bkgUrl);
+                          alert(`Copied Booking.com Export iCal link for ${item.name} to clipboard.`);
+                        }}
+                        className="px-2 py-1 bg-slate-800 hover:bg-slate-700 text-blue-300 border border-slate-600 rounded-lg font-bold transition-colors cursor-pointer text-[10px]"
+                      >
+                        Copy iCal
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       )}
 

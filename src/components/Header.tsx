@@ -159,9 +159,11 @@ export const Header: React.FC<HeaderProps> = ({
                 🧪 Test Sandbox (Isolated)
               </span>
             )}
-            <span className="text-slate-300 hidden lg:inline">
-              Johannesburg • Cape Town • London • Dubai • New York • Paris • Bali
-            </span>
+            {currentRole !== 'guest' && (
+              <span className="text-slate-300 hidden lg:inline">
+                Johannesburg • Cape Town • London • Dubai • New York • Paris • Bali
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-3 text-[11px]">
@@ -194,22 +196,24 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
 
             {/* Quick Login Page Trigger */}
-            <button
-              id="header-user-account-btn"
-              onClick={handleAuthClick}
-              className="flex items-center gap-1.5 bg-emerald-700/80 hover:bg-emerald-700 text-white font-semibold px-2.5 py-0.5 rounded-lg border border-emerald-600 transition-colors cursor-pointer"
-              title="Log In / Register"
-            >
-              <KeyRound className="w-3 h-3" />
-              {currentUser.id !== 'guest-1' && Boolean(currentUser.email) ? (
-                <>
-                  <span className="hidden md:inline">Account:</span>
-                  <span className="font-bold">{(currentUser.fullName || currentUser.name).split(' ')[0]}</span>
-                </>
-              ) : (
-                <span className="font-bold">Sign In / Register</span>
-              )}
-            </button>
+            {currentRole !== 'owner' && (
+              <button
+                id="header-user-account-btn"
+                onClick={handleAuthClick}
+                className="flex items-center gap-1.5 bg-emerald-700/80 hover:bg-emerald-700 text-white font-semibold px-2.5 py-0.5 rounded-lg border border-emerald-600 transition-colors cursor-pointer"
+                title="Log In / Register"
+              >
+                <KeyRound className="w-3 h-3" />
+                {currentUser.id !== 'guest-1' && Boolean(currentUser.email) ? (
+                  <>
+                    <span className="hidden md:inline">Account:</span>
+                    <span className="font-bold">{(currentUser.fullName || currentUser.name).split(' ')[0]}</span>
+                  </>
+                ) : (
+                  <span className="font-bold">Sign In / Register</span>
+                )}
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -371,7 +375,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
 
               {/* Add Booking Link for Guest with Calendar */}
-              {onOpenGuestBookingLink && (
+              {onOpenGuestBookingLink && currentRole !== 'guest' && currentRole !== 'owner' && currentUser?.role !== 'owner' && currentUser?.role !== 'guest' && (
                 <button
                   id="header-guest-booking-link-btn"
                   type="button"
@@ -381,36 +385,6 @@ export const Header: React.FC<HeaderProps> = ({
                 >
                   <Link2 className="w-3.5 h-3.5 text-indigo-600" />
                   <span>Guest Booking Link</span>
-                </button>
-              )}
-
-              {/* Notifications Hub */}
-              <button
-                id="header-notifications-btn"
-                type="button"
-                onClick={() => setIsNotificationHubOpen(true)}
-                className="relative flex items-center gap-1 px-2.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-900 rounded-xl text-xs font-bold border border-amber-200 transition-colors cursor-pointer shrink-0"
-                title="Email, OTP, In-App Chat &amp; WhatsApp Notifications Hub"
-              >
-                <Bell className="w-3.5 h-3.5 text-amber-600" />
-                <span className="hidden sm:inline">Alerts</span>
-                {effectiveAlertCount > 0 && (
-                  <span className="bg-amber-600 text-white text-[10px] px-1.5 py-0.2 rounded-full font-extrabold">
-                    {effectiveAlertCount}
-                  </span>
-                )}
-              </button>
-
-              {/* Google Search & Maps Grounding Advisor */}
-              {onOpenGroundingAdvisor && (
-                <button
-                  type="button"
-                  onClick={onOpenGroundingAdvisor}
-                  className="flex items-center gap-1 px-2.5 py-2 bg-purple-50 text-purple-800 hover:bg-purple-100 rounded-xl text-xs font-bold border border-purple-200 transition-colors cursor-pointer shrink-0"
-                  title="Google Search &amp; Maps Grounding Advisor"
-                >
-                  <Sparkles className="w-3.5 h-3.5 text-purple-600" />
-                  <span className="hidden sm:inline">Grounding</span>
                 </button>
               )}
 
@@ -436,17 +410,6 @@ export const Header: React.FC<HeaderProps> = ({
                 <span>⚖️ Legal & Laws</span>
               </button>
 
-              {/* 24/7 AI Host / WhatsApp Concierge */}
-              <button
-                id="header-ai-chat-btn"
-                type="button"
-                onClick={handleChat}
-                className="flex items-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-xl text-xs font-bold border border-emerald-200 transition-colors cursor-pointer shrink-0"
-                title="24/7 Virtual Host &amp; Gemini Assistant"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-                <span>24/7 Concierge</span>
-              </button>
 
               {/* Wishlist */}
               {!isAuthPageActive && (
@@ -504,10 +467,12 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="bg-slate-50/95 border-b border-slate-200/70">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex flex-wrap items-center justify-between gap-2">
               <div className="flex flex-wrap items-center gap-2">
-                <span className={`inline-flex items-center gap-1.5 text-[11px] font-black px-3 py-1 rounded-full border shadow-2xs ${envInfo.badgeStyleClass}`}>
-                  <Globe className={`w-3.5 h-3.5 flex-shrink-0 ${envInfo.globeIconColorClass}`} />
-                  <span>{envInfo.badgeLabel}</span>
-                </span>
+                {currentRole !== 'guest' && currentRole !== 'owner' && currentUser?.role !== 'owner' && currentUser?.role !== 'guest' && (
+                  <span className={`inline-flex items-center gap-1.5 text-[11px] font-black px-3 py-1 rounded-full border shadow-2xs ${envInfo.badgeStyleClass}`}>
+                    <Globe className={`w-3.5 h-3.5 flex-shrink-0 ${envInfo.globeIconColorClass}`} />
+                    <span>{envInfo.badgeLabel}</span>
+                  </span>
+                )}
                 <a
                   href="https://wa.me/27694977018?text=Hello%20Scope%20Bridge%20Support%2C%20I%20am%20connecting%20for%20assistance."
                   target="_blank"
@@ -526,11 +491,11 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Super Admin Interactive Portal & Environment Strip (Strictly Inside Super Admin Account / Session) */}
       {isSuperAdmin && (
-        <div className="bg-slate-900 text-white border-t border-slate-800 px-4 py-1.5">
+        <div className="bg-slate-800 text-white border-t border-slate-700 px-4 py-1.5 shadow-inner">
           <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 overflow-x-auto no-scrollbar">
             <div className="flex items-center gap-1.5">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-300 bg-purple-950/90 border border-purple-700/60 px-2 py-0.5 rounded-md mr-1 flex items-center gap-1">
-                <ShieldCheck className="w-3 h-3 text-purple-400" />
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-purple-200 bg-purple-900/90 border border-purple-600/60 px-2 py-0.5 rounded-md mr-1 flex items-center gap-1">
+                <ShieldCheck className="w-3 h-3 text-purple-300" />
                 Super Admin Portals:
               </span>
               {roleOptions.map((opt) => {
@@ -547,7 +512,7 @@ export const Header: React.FC<HeaderProps> = ({
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-bold flex items-center gap-1.5 transition-all whitespace-nowrap cursor-pointer ${
                       isActive
                         ? 'bg-emerald-600 text-white shadow-xs'
-                        : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700'
+                        : 'bg-slate-700 hover:bg-slate-600 text-slate-100 border border-slate-600'
                     }`}
                   >
                     <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-emerald-400'}`} />

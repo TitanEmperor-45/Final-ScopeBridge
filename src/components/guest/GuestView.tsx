@@ -593,13 +593,6 @@ export const GuestView: React.FC<GuestViewProps> = ({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={() => setActiveGuestTab('calendar')}
-            className="px-3.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-extrabold shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
-          >
-            <CalendarDays className="w-3.5 h-3.5" />
-            <span>Calendar & Planner</span>
-          </button>
 
           {onOpenGuestBookingLink && (
             <button
@@ -1497,43 +1490,7 @@ export const GuestView: React.FC<GuestViewProps> = ({
                           )}
                         </div>
 
-                        {/* Visible Channels */}
-                        <div className="flex flex-wrap items-center gap-1">
-                          <span className="text-[9px] text-emerald-800 uppercase font-extrabold">
-                            📡 Visible Channels:
-                          </span>
-                          <span className="text-[9px] bg-emerald-600 text-white px-1.5 py-0.5 rounded font-extrabold">
-                            ✓ ScopeBridge Direct
-                          </span>
-                          {(property.publishedChannels || ['ch-booking', 'ch-airbnb'])
-                            .filter((c) => !c.toLowerCase().includes('direct'))
-                            .map((ch, idx) => (
-                              <span
-                                key={idx}
-                                className="text-[9px] bg-emerald-50 text-emerald-800 border border-emerald-200 px-1.5 py-0.5 rounded font-extrabold"
-                              >
-                                ✓ {ch.replace('ch-', '').toUpperCase()}
-                              </span>
-                            ))}
-                        </div>
 
-                        {/* Registered Channels */}
-                        <div className="flex flex-wrap items-center gap-1">
-                          <span className="text-[9px] text-indigo-800 uppercase font-extrabold">
-                            📋 Registered (Owner & Property):
-                          </span>
-                          {(property.requestedChannels && property.requestedChannels.length > 0
-                            ? property.requestedChannels
-                            : ['ScopeBridge Direct', 'Booking.com', 'Airbnb']
-                          ).map((ch, idx) => (
-                            <span
-                              key={idx}
-                              className="text-[9px] bg-indigo-50 text-indigo-800 border border-indigo-200 px-1.5 py-0.5 rounded font-bold"
-                            >
-                              {ch}
-                            </span>
-                          ))}
-                        </div>
                       </div>
                     </div>
 

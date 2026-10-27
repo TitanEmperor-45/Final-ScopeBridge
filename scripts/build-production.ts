@@ -75,7 +75,6 @@ try {
   if (fs.existsSync(path.join(DIST_DIR, 'server.js'))) {
     fs.copyFileSync(path.join(DIST_DIR, 'server.js'), path.join(DIST_DIR, 'server.cjs'));
     fs.copyFileSync(path.join(DIST_DIR, 'server.js'), path.join(DIST_DIR, 'server.mjs'));
-    fs.copyFileSync(path.join(DIST_DIR, 'server.js'), path.join(ROOT_DIR, 'server.js'));
   }
   if (fs.existsSync(PROD_DB_FILE)) {
     const distDataDir = path.join(DIST_DIR, 'data');

@@ -8,7 +8,7 @@ import {
   XCircle, AlertTriangle, Sliders, ToggleLeft, ToggleRight, Sparkles,
   Building, Check, Ban, Plus, ArrowUpRight, Lock, Key, Globe, CreditCard, Inbox, BedDouble, Car,
   Wallet, TrendingUp, PlusCircle, MinusCircle, History, Search, ArrowDownRight, Clock, FileText, Receipt, Gavel,
-  Baby, Monitor, Plane, Fuel, Award, Wrench, Compass, CheckCircle2, UserCheck, Download, FileSpreadsheet, Trash2, Database, Edit3, Calendar, Activity, Zap, Radio, KeyRound, FolderTree, ChevronDown, ChevronRight, Layers
+  Baby, Monitor, Plane, Fuel, Award, Wrench, Compass, CheckCircle2, UserCheck, Download, FileSpreadsheet, Trash2, Database, Edit3, Calendar, Activity, Zap, Radio, KeyRound, FolderTree, ChevronDown, ChevronRight, Layers, Tag
 } from 'lucide-react';
 import { AdminChannelsManager } from './AdminChannelsManager';
 import { AdminGatewaysManager } from './AdminGatewaysManager';
@@ -96,6 +96,7 @@ interface AdminPortalProps {
   onUpdateBookings?: React.Dispatch<React.SetStateAction<Booking[]>>;
   onUpdateCalendarEvents?: React.Dispatch<React.SetStateAction<CalendarPlanEvent[]>>;
   onOpenGuestBookingLink?: () => void;
+  onUpdatePromos?: React.Dispatch<React.SetStateAction<any[]>>;
 }
 
 export const AdminPortal: React.FC<AdminPortalProps> = ({
@@ -103,6 +104,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   currentUser,
   cleaningTasks = [],
   promos = [],
+  onUpdatePromos,
   registeredUsers = [],
   onUpdateRegisteredUsers,
   onDeleteUserAccount,
@@ -223,7 +225,7 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
       );
     });
   const [activeTab, setActiveTab] = useState<
-    'owner_tree' | 'occupancy_map' | 'system_health' | 'db_monitor' | 'calendar_planner' | 'live_notifications' | 'finance' | 'channels' | 'gateways' | 'requests' | 'access' | 'listings' | 'ai_rules' | 'reports' | 'room_bids' | 'fleet_service' | 'virtual_wallets' | 'quotes_invoices' | 'commissions' | 'nanny_on_call' | 'fleet_management' | 'kiosk_support'
+    'owner_tree' | 'occupancy_map' | 'system_health' | 'db_monitor' | 'calendar_planner' | 'live_notifications' | 'finance' | 'channels' | 'gateways' | 'requests' | 'access' | 'listings' | 'ai_rules' | 'reports' | 'room_bids' | 'fleet_service' | 'virtual_wallets' | 'quotes_invoices' | 'commissions' | 'nanny_on_call' | 'fleet_management' | 'kiosk_support' | 'promos'
   >('owner_tree');
 
   const getCommissionGrowthData = () => {
@@ -302,6 +304,11 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
   const [newUserTitle, setNewUserTitle] = useState('Property Host & Employer');
   const [newUserPassword, setNewUserPassword] = useState('ScopeBridg@2026');
   const [newUserInitialStatus, setNewUserInitialStatus] = useState<'active' | 'pending' | 'suspended'>('pending');
+
+  // Admin Promo Codes & Loyalty Management State
+  const [adminNewPromoCode, setAdminNewPromoCode] = useState<string>('');
+  const [adminNewPromoDiscount, setAdminNewPromoDiscount] = useState<number>(10);
+  const [adminNewPromoDesc, setAdminNewPromoDesc] = useState<string>('');
 
   // Owners list state (Zero mock data on Production)
   const [ownersList, setOwnersList] = useState(() =>
@@ -1254,7 +1261,150 @@ export const AdminPortal: React.FC<AdminPortalProps> = ({
           <Monitor className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
           <span className="truncate">Kiosk Links</span>
         </button>
+
+        <button
+          onClick={() => setActiveTab('promos')}
+          className={`h-9 px-3 rounded-xl transition-all flex items-center justify-start gap-2 whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer ${
+            activeTab === 'promos'
+              ? 'bg-white text-emerald-900 shadow-xs border border-slate-200'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
+          }`}
+        >
+          <Tag className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+          <span className="truncate">Loyalty &amp; Promos ({promos.length})</span>
+        </button>
       </div>
+
+      {/* SECTION: ADMIN LOYALTY & PROMO CODES MANAGER */}
+      {activeTab === 'promos' && (
+        <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xs space-y-6">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <Tag className="w-5 h-5 text-emerald-600" />
+                Global Platform Promo Codes &amp; Loyalty Discounts
+              </h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Admin-controlled platform discount codes, seasonal vouchers, and guest direct booking loyalty promotions.
+              </p>
+            </div>
+            <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-full border border-emerald-200">
+              {promos.length} Active Vouchers
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Create Promo Code Form */}
+            <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+              <h4 className="text-sm font-bold text-slate-900">Create New Promo Code</h4>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (!adminNewPromoCode.trim()) return;
+                  const newP = {
+                    code: adminNewPromoCode.trim().toUpperCase(),
+                    discountPercent: adminNewPromoDiscount,
+                    active: true,
+                    uses: 0,
+                    description: adminNewPromoDesc.trim() || 'ScopeBridge direct booking promotion',
+                  };
+                  if (onUpdatePromos) {
+                    onUpdatePromos((prev: any[]) => [newP, ...prev]);
+                  }
+                  setAdminNewPromoCode('');
+                  setAdminNewPromoDesc('');
+                }}
+                className="space-y-3 text-xs"
+              >
+                <div>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Coupon Code</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. SUMMER2026"
+                    value={adminNewPromoCode}
+                    onChange={(e) => setAdminNewPromoCode(e.target.value)}
+                    className="w-full p-2 bg-white border border-slate-200 rounded-xl font-mono uppercase font-bold"
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Discount Percentage</label>
+                  <select
+                    value={adminNewPromoDiscount}
+                    onChange={(e) => setAdminNewPromoDiscount(Number(e.target.value))}
+                    className="w-full p-2 bg-white border border-slate-200 rounded-xl font-bold"
+                  >
+                    <option value={5}>5% Discount</option>
+                    <option value={10}>10% Discount</option>
+                    <option value={15}>15% Discount</option>
+                    <option value={20}>20% Discount</option>
+                    <option value={25}>25% Discount</option>
+                    <option value={30}>30% Discount</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Description / Campaign</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Executive guest reward voucher"
+                    value={adminNewPromoDesc}
+                    onChange={(e) => setAdminNewPromoDesc(e.target.value)}
+                    className="w-full p-2 bg-white border border-slate-200 rounded-xl"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={!adminNewPromoCode.trim()}
+                  className="w-full py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl transition-colors disabled:opacity-40 cursor-pointer"
+                >
+                  Create Promo Voucher
+                </button>
+              </form>
+            </div>
+
+            {/* List of Active Promos */}
+            <div className="lg:col-span-2 space-y-3">
+              <h4 className="text-sm font-bold text-slate-900">Active Platform Promo Codes</h4>
+              <div className="space-y-2">
+                {promos.length === 0 ? (
+                  <p className="text-xs text-slate-400 italic p-4 bg-slate-50 rounded-xl">No promo vouchers active yet.</p>
+                ) : (
+                  promos.map((p: any) => (
+                    <div key={p.code} className="p-4 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between gap-4">
+                      <div className="space-y-0.5">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-extrabold text-slate-900 text-sm bg-white px-2.5 py-1 rounded-lg border border-slate-200">
+                            {p.code}
+                          </span>
+                          <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                            {p.discountPercent}% OFF
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500">{p.description}</p>
+                      </div>
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        <span className="text-xs text-slate-400 font-mono">
+                          {p.uses || 0} uses
+                        </span>
+                        {onUpdatePromos && (
+                          <button
+                            type="button"
+                            onClick={() => onUpdatePromos((prev: any[]) => prev.filter((item: any) => item.code !== p.code))}
+                            className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                            title="Delete promo code"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* SECTION: ADMINISTRATOR ACTIVE DIRECTORY HIERARCHICAL TREE VIEW */}
       {activeTab === 'owner_tree' && (

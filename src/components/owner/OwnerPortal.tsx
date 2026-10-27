@@ -771,15 +771,6 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
             <span>Add Property</span>
           </button>
 
-          {onOpenGuestBookingLink && (
-            <button
-              onClick={onOpenGuestBookingLink}
-              className="h-9 flex items-center justify-center gap-1.5 px-3.5 bg-indigo-700 hover:bg-indigo-800 text-white rounded-xl font-bold shadow-xs transition-colors shrink-0 whitespace-nowrap cursor-pointer"
-            >
-              <LinkIcon className="w-4 h-4" />
-              <span>Guest Booking Link (Calendar)</span>
-            </button>
-          )}
         </div>
       </div>
 
@@ -847,17 +838,6 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
           <span className="truncate">Rooms & Pricing</span>
         </button>
 
-        <button
-          onClick={() => setActiveCategory('channels_gateways')}
-          className={`h-9 px-3 rounded-xl transition-all flex items-center justify-start gap-2 whitespace-nowrap overflow-hidden text-ellipsis ${
-            activeCategory === 'channels_gateways'
-              ? 'bg-white text-emerald-900 shadow-xs border border-slate-200'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-          }`}
-        >
-          <Globe className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-          <span className="truncate">Channels & Gateways</span>
-        </button>
 
         <button
           onClick={() => setActiveCategory('operations')}
@@ -883,17 +863,7 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
           <span className="truncate">Guest Comms & Locks</span>
         </button>
 
-        <button
-          onClick={() => setActiveCategory('growth')}
-          className={`h-9 px-3 rounded-xl transition-all flex items-center justify-start gap-2 whitespace-nowrap overflow-hidden text-ellipsis ${
-            activeCategory === 'growth'
-              ? 'bg-white text-emerald-900 shadow-xs border border-slate-200'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/60'
-          }`}
-        >
-          <TrendingUp className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-          <span className="truncate">Loyalty & Promos</span>
-        </button>
+
 
         <button
           onClick={() => setActiveCategory('staff_payroll')}
@@ -1146,7 +1116,7 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Feature 1.1: Dynamic Pricing Tool */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4 lg:col-span-2">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="w-4 h-4 text-emerald-600" />
@@ -1215,7 +1185,7 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
                   </span>
                 ) : (
                   <span className="text-[11px] text-slate-400">
-                    Saves to Airbnb & Booking.com feeds
+                    Saves to ScopeBridge rates
                   </span>
                 )}
                 <button
@@ -1224,248 +1194,6 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
                 >
                   Save Dynamic Rates
                 </button>
-              </div>
-            </div>
-
-            {/* Feature 1.2: Channel Manager (sync Booking.com, Airbnb, Direct) */}
-            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <div className="flex items-center gap-2">
-                  <RefreshCw className={`w-4 h-4 text-emerald-600 ${isSyncingChannels ? 'animate-spin' : ''}`} />
-                  <h3 className="text-sm font-bold text-slate-900">
-                    Channel Manager (No Double Bookings)
-                  </h3>
-                </div>
-                <button
-                  onClick={handleSyncChannels}
-                  disabled={isSyncingChannels}
-                  className="flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-bold transition-colors disabled:opacity-50"
-                >
-                  <span>Sync All Now</span>
-                </button>
-              </div>
-
-              <p className="text-xs text-slate-500">
-                Instant 2-way iCal & API calendar synchronization between your direct site, Booking.com, and Airbnb.
-              </p>
-
-              <div className="space-y-2 text-xs">
-                {/* Direct Site */}
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse"></div>
-                    <div>
-                      <span className="font-bold text-slate-900 block">Direct Website (ScopeBridge)</span>
-                      <span className="text-[10px] text-slate-500">0% commission • Instant lock codes</span>
-                    </div>
-                  </div>
-                  <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">
-                    Active
-                  </span>
-                </div>
-
-                {/* Airbnb */}
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div>
-                    <div>
-                      <span className="font-bold text-slate-900 block">Airbnb Calendar Sync</span>
-                      <span className="text-[10px] text-slate-500">Last synced: {lastSyncText}</span>
-                    </div>
-                  </div>
-                  <span className="text-[10px] bg-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded">
-                    Connected
-                  </span>
-                </div>
-
-                {/* Booking.com */}
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between">
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-2.5 h-2.5 bg-emerald-500 rounded-full"></div>
-                    <div>
-                      <span className="font-bold text-slate-900 block">Booking.com iCal Feed</span>
-                      <span className="text-[10px] text-slate-500">Rates pushed • Calendar locked</span>
-                    </div>
-                  </div>
-                  <span className="text-[10px] bg-slate-200 text-slate-700 font-semibold px-2 py-0.5 rounded">
-                    Connected
-                  </span>
-                </div>
-              </div>
-
-              {/* UNIVERSAL 7-PROPERTY iCAL & FEED MANAGER */}
-              <div className="mt-4 pt-4 border-t border-slate-200 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900">
-                    🌐 Universal 7-Property Airbnb iCal Feeds (Active Sync)
-                  </span>
-                  <span className="text-[10px] bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold px-2 py-0.5 rounded-full">
-                    2-Way Blocked Dates Active
-                  </span>
-                </div>
-
-                {/* Airbnb Outbound Export Feed */}
-                <div className="p-3 bg-rose-50/70 rounded-xl border border-rose-200 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-rose-900">
-                      Step 1: Your ScopeBridge Export Feed (Paste into Airbnb)
-                    </span>
-                    <span className="text-[10px] bg-rose-100 text-rose-800 font-mono font-bold px-1.5 py-0.5 rounded">
-                      Live Feed
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-rose-800 leading-relaxed">
-                    Paste this feed URL into your Airbnb listing under <strong>Pricing and availability → Calendar sync → Import calendar</strong> so Airbnb automatically blocks all dates booked on ScopeBridge.
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      readOnly
-                      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/api/calendar/export.ics?propertyId=${activeProperty?.id || 'all'}`}
-                      className="w-full bg-white border border-rose-300 rounded-lg px-2.5 py-1.5 text-[11px] font-mono text-rose-950"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/api/calendar/export.ics?propertyId=${activeProperty?.id || 'all'}`;
-                        navigator.clipboard.writeText(url);
-                        alert("Copied ScopeBridge Export iCal link for Airbnb! Paste this in your Airbnb Listing under Pricing & Availability -> Calendar sync -> Import calendar.");
-                      }}
-                      className="px-3 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-lg text-[10px] font-bold shrink-0 transition-colors cursor-pointer"
-                    >
-                      Copy Link
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5 pt-1">
-                  <span className="text-[11px] font-bold text-slate-700 block">
-                    Step 2: Airbnb Inbound Listing Feeds (Imported into ScopeBridge)
-                  </span>
-                </div>
-
-                <div className="space-y-2 max-h-[220px] overflow-y-auto pr-1">
-                  {[
-                    { name: 'Rev Lux 2', url: 'https://www.airbnb.co.za/calendar/ical/1696949048961628947.ics?t=580cc049fe804fdaa74c019f501637f5', blocked: ['2026-10-18', '2026-10-19'] },
-                    { name: 'Rev Lux', url: 'https://www.airbnb.co.za/calendar/ical/1693017309367793327.ics?t=fefe7e2258034bc1a149fa38397f2008', blocked: ['2026-10-20', '2026-10-21'] },
-                    { name: 'Sand Lux 1', url: 'https://www.airbnb.co.za/calendar/ical/1006524732081072772.ics?t=36390aba1d334c6baa900efbf1b52791', blocked: ['2026-10-22'] },
-                    { name: 'Sand Lux 2', url: 'https://www.airbnb.co.za/calendar/ical/1005227705117080489.ics?t=218a20004e7548ddbd780eeb640df1c0', blocked: ['2026-10-23'] },
-                    { name: 'Sand Lux 3', url: 'https://www.airbnb.co.za/calendar/ical/700479090582969332.ics?t=2dbcaa192a27491faf28e4e02ada3f80', blocked: ['2026-10-24'] },
-                    { name: 'Sand Lux 4', url: 'https://www.airbnb.co.za/calendar/ical/1005215909417275650.ics?t=3c5461bdc8724eababff247f94060e3f', blocked: ['2026-10-26'] },
-                    { name: 'Sand Lux 5', url: 'https://www.airbnb.co.za/calendar/ical/1006525012201215997.ics?t=ea6c8451d4cb4d4facc8ddfc1058b01f', blocked: ['2026-10-27'] },
-                  ].map((feed, idx) => (
-                    <div key={idx} className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2 text-xs">
-                      <div className="truncate">
-                        <span className="font-bold text-slate-900 block">{feed.name}</span>
-                        <span className="font-mono text-[10px] text-slate-500 truncate block max-w-[220px]">
-                          {feed.url}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        <span className="text-[10px] bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded font-mono">
-                          {feed.blocked.length} blocked
-                        </span>
-                        <button
-                          onClick={() => {
-                            navigator.clipboard.writeText(feed.url);
-                            alert(`Copied iCal link for ${feed.name} to clipboard.`);
-                          }}
-                          className="px-2 py-1 bg-white border border-slate-300 rounded-lg text-slate-700 hover:bg-slate-100 font-bold transition-colors cursor-pointer text-[10px]"
-                        >
-                          Copy iCal
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* BOOKING.COM EXTRANET iCAL EXPORT & IMPORT SYNCHRONIZER */}
-              <div className="mt-4 pt-4 border-t border-slate-200 space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-blue-600 animate-pulse" />
-                    Booking.com Extranet 2-Way Sync (admin.booking.com)
-                  </span>
-                  <span className="text-[10px] bg-blue-50 text-blue-800 border border-blue-200 font-bold px-2 py-0.5 rounded-full">
-                    2-Way RFC 5545 Sync
-                  </span>
-                </div>
-                <p className="text-[11px] text-slate-500">
-                  Export ScopeBridge bookings to Booking.com, or import Booking.com reservations to lock availability in real time without enterprise API keys.
-                </p>
-
-                {/* ScopeBridge Outbound Export Link to paste into Booking.com */}
-                <div className="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-emerald-900">
-                      Step 1: Your ScopeBridge Export Feed (Paste into Booking.com)
-                    </span>
-                    <span className="text-[10px] bg-emerald-100 text-emerald-800 font-mono font-bold px-1.5 py-0.5 rounded">
-                      Live Feed
-                    </span>
-                  </div>
-                  <p className="text-[10px] text-emerald-800 leading-relaxed">
-                    Paste this feed URL into Booking.com Extranet under <strong>Calendar & Pricing → Sync Calendars → Add calendar connection</strong> so Booking.com blocks all dates booked on ScopeBridge.
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      readOnly
-                      value={`${typeof window !== 'undefined' ? window.location.origin : ''}/api/calendar/export.ics?propertyId=all`}
-                      className="w-full bg-white border border-emerald-300 rounded-lg px-2.5 py-1.5 text-[11px] font-mono text-emerald-950"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const url = `${typeof window !== 'undefined' ? window.location.origin : ''}/api/calendar/export.ics?propertyId=all`;
-                        navigator.clipboard.writeText(url);
-                        alert("Copied ScopeBridge Export iCal link! Now paste this into Booking.com Extranet under Calendar -> Sync Calendars -> Add Calendar Connection.");
-                      }}
-                      className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-[10px] font-bold shrink-0 transition-colors cursor-pointer"
-                    >
-                      Copy Link
-                    </button>
-                  </div>
-                </div>
-
-                {/* Booking.com Inbound Feeds */}
-                <div className="space-y-1.5">
-                  <span className="text-[11px] font-bold text-slate-700 block">
-                    Step 2: Booking.com Extranet Inbound Links
-                  </span>
-                  <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
-                    {[
-                      { name: 'Rev Lux 2', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=revlux2-bkg-2026' },
-                      { name: 'Rev Lux', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=revlux-bkg-2026' },
-                      { name: 'Sand Lux 1', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux1-bkg-2026' },
-                      { name: 'Sand Lux 2', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux2-bkg-2026' },
-                      { name: 'Sand Lux 3', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux3-bkg-2026' },
-                      { name: 'Sand Lux 4', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux4-bkg-2026' },
-                      { name: 'Sand Lux 5', bkgUrl: 'https://admin.booking.com/hotel/hoteladmin/ical.html?t=sandlux5-bkg-2026' },
-                    ].map((item, idx) => (
-                      <div key={idx} className="p-2.5 bg-blue-50/50 border border-blue-100 rounded-xl flex items-center justify-between gap-2 text-xs">
-                        <div className="truncate">
-                          <span className="font-bold text-slate-900 block">{item.name}</span>
-                          <span className="font-mono text-[10px] text-blue-700 truncate block max-w-[220px]">
-                            {item.bkgUrl}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            onClick={() => {
-                              navigator.clipboard.writeText(item.bkgUrl);
-                              alert(`Copied Booking.com Export iCal link for ${item.name} to clipboard.`);
-                            }}
-                            className="px-2 py-1 bg-white border border-blue-200 rounded-lg text-blue-800 hover:bg-blue-50 font-bold transition-colors cursor-pointer text-[10px]"
-                          >
-                            Copy iCal
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             </div>
 
@@ -1803,7 +1531,7 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
                                 }
                               >
                                 <span>{ch.logo}</span>
-                                <span>{isPub ? '✓ ' : '+ '}{ch.name.split(' ')[0]}</span>
+                                <span>{isPub ? '✓ ' : '+ '}{(ch.name || 'Channel').split(' ')[0]}</span>
                               </button>
                             );
                           })}
@@ -2622,17 +2350,6 @@ export const OwnerPortal: React.FC<OwnerPortalProps> = ({
       {/* ------------------------------------------------------------- */}
       {/* SECTION: CHANNELS & PAYMENT GATEWAYS MANAGER */}
       {/* ------------------------------------------------------------- */}
-      {activeCategory === 'channels_gateways' && (
-        <OwnerChannelGatewayManager
-          properties={properties}
-          channels={channels}
-          gateways={effectiveGateways}
-          requests={effectiveRequests}
-          onSubmitRequest={handleRequestSubmit}
-          onPublishPropertyToChannel={handlePublishProperty}
-          onBookProperty={onBookProperty}
-        />
-      )}
 
       {/* ------------------------------------------------------------- */}
       {/* SECTION 2: OPERATIONS & UNIVERSAL CALENDAR / PLANNER          */}
@@ -3021,7 +2738,7 @@ Checkout is at 10:00 AM.
                     <div>
                       <span className="font-bold text-slate-900 block">{booking.guestName}</span>
                       <span className="text-[10px] text-slate-500">
-                        {booking.checkInDate} • {booking.propertyTitle.split(' ')[0]}
+                        {booking.checkInDate} • {(booking.propertyTitle || 'Property').split(' ')[0]}
                       </span>
                     </div>
 
@@ -3104,9 +2821,8 @@ Checkout is at 10:00 AM.
       )}
 
       {/* ------------------------------------------------------------- */}
-      {/* SECTION 4: GROWTH */}
-      {/* ------------------------------------------------------------- */}
-      {activeCategory === 'growth' && (
+      {/* SECTION 4: GROWTH (Disabled for Owner - Admin Only) */}
+      {false && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Feature 4.1: Reports / Analytics */}
@@ -4155,8 +3871,8 @@ Checkout is at 10:00 AM.
                   passengerName: newShtPassenger.trim(),
                   passengerPhone: newShtPhone.trim() || '+27 82 000 0000',
                   driverName: newShtDriver,
-                  vehicleModel: newShtVehicle.split('(')[0].trim(),
-                  vehiclePlate: newShtVehicle.includes('(') ? newShtVehicle.split('(')[1].replace(')', '') : 'GP 100-200',
+                  vehicleModel: (newShtVehicle || '').split('(')[0].trim(),
+                  vehiclePlate: (newShtVehicle || '').includes('(') ? (newShtVehicle || '').split('(')[1].replace(')', '') : 'GP 100-200',
                   pickupLocation: newShtPickup,
                   dropoffLocation: newShtDropoff,
                   date: new Date().toISOString().slice(0, 10),

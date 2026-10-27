@@ -806,52 +806,11 @@ export const AuthPage: React.FC<AuthPageProps> = ({
 
         {/* THREE-COLUMN LAYOUT: LEFT (BANK ACCOUNT) • CENTER (LOGIN / KIOSK / REGISTER) • RIGHT (OFFICIAL DOCUMENTATION & PDF) */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
-          {/* LEFT COLUMN: OFFICIAL SCOPE BRIDGE BANK ACCOUNT */}
-          <div className="lg:col-span-3 lg:sticky lg:top-24 order-2 lg:order-1">
-            <div className="bg-slate-900 text-white rounded-2xl p-5 border border-slate-800 shadow-md space-y-3.5 relative overflow-hidden">
-              <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <Landmark className="w-4 h-4 text-slate-300 shrink-0" />
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-200">
-                    Scope Bridge Escrow Account
-                  </span>
-                </div>
-                <span className="text-[9px] bg-slate-800 text-slate-300 border border-slate-700 font-bold px-2 py-0.5 rounded-full">
-                  Primary Escrow Bank
-                </span>
-              </div>
 
-              <div className="grid grid-cols-2 gap-2.5 text-xs">
-                <div className="space-y-0.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                  <span className="text-[9px] text-slate-400 uppercase font-bold block">Bank Name</span>
-                  <p className="font-bold text-white text-xs">Absa Bank</p>
-                </div>
-                <div className="space-y-0.5 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                  <span className="text-[9px] text-slate-400 uppercase font-bold block">Branch Code</span>
-                  <p className="font-mono font-bold text-white text-xs">632005</p>
-                </div>
-                <div className="space-y-0.5 col-span-2 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                  <span className="text-[9px] text-slate-400 uppercase font-bold block">Account Name</span>
-                  <p className="font-bold text-white text-xs">NANZA PROPERTIES GROUP (PTY) LTD</p>
-                </div>
-                <div className="space-y-0.5 col-span-2 bg-slate-950/60 p-2.5 rounded-xl border border-slate-800">
-                  <span className="text-[9px] text-slate-400 uppercase font-bold block">Account Number</span>
-                  <p className="font-mono font-bold text-slate-100 text-sm tracking-wider">4113870950</p>
-                </div>
-              </div>
-
-              <div className="text-[10px] text-slate-400 flex items-start gap-2 bg-slate-950/40 p-3 rounded-xl border border-slate-800/80 leading-relaxed">
-                <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
-                <span>
-                  Platform subscriptions, registration fees, security deposits, and booking payouts are securely routed through this account.
-                </span>
-              </div>
-            </div>
-          </div>
 
           {/* CENTER COLUMN: AUTH / LOGIN / KIOSK / REGISTER SCREEN */}
-          <div className="lg:col-span-6 order-1 lg:order-2">
-            <div className="bg-white border-slate-200 rounded-2xl border shadow-md overflow-hidden">
+          <div className="lg:col-span-12 flex justify-center order-1">
+            <div className="bg-white border-slate-200 rounded-2xl border shadow-md overflow-hidden w-full max-w-2xl">
               {/* Tab Selector Header */}
               <div className="grid grid-cols-2 sm:grid-cols-5 border-b border-slate-200 bg-slate-50/80 p-1.5 gap-1.5">
                 <button
@@ -902,21 +861,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                   <span>Register</span>
                 </button>
 
-                <button
-                  id="auth-tab-calendar-btn"
-                  onClick={() => {
-                    setActiveAuthTab('calendar');
-                    setLoginError(null);
-                  }}
-                  className={`flex items-center justify-center gap-1.5 py-2.5 rounded-xl font-bold text-[11px] transition-all cursor-pointer ${
-                    activeAuthTab === 'calendar'
-                      ? 'bg-slate-900 text-white shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-                  }`}
-                >
-                  <CalendarIcon className="w-3.5 h-3.5" />
-                  <span>Calendar</span>
-                </button>
 
                 <button
                   id="auth-tab-guest-link-btn"
@@ -1429,83 +1373,6 @@ export const AuthPage: React.FC<AuthPageProps> = ({
                     </div>
                   </div>
 
-                  {/* Registered Holiday Channels for Calendar & Multi-Channel Sync */}
-                  <div className="space-y-2 p-3.5 bg-emerald-50/50 border border-emerald-200 rounded-xl">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-xs font-extrabold text-slate-900">
-                        Registered Holiday & Distribution Channels (Calendar Sync Across All Channels)
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setRegHolidayChannels(
-                            regHolidayChannels.length === HOLIDAY_CHANNEL_OPTIONS.length
-                              ? ['direct']
-                              : HOLIDAY_CHANNEL_OPTIONS.map((c) => c.id)
-                          )
-                        }
-                        className="text-[10px] font-bold text-emerald-700 hover:underline cursor-pointer"
-                      >
-                        {regHolidayChannels.length === HOLIDAY_CHANNEL_OPTIONS.length ? 'Select Direct Only' : 'Select All Channels'}
-                      </button>
-                    </div>
-                    <p className="text-[11px] text-slate-600">
-                      Your profile calendar, bookings, and holiday plans will automatically synchronize across all selected channels:
-                    </p>
-                    <div className="flex flex-wrap gap-1.5 pt-1">
-                      {HOLIDAY_CHANNEL_OPTIONS.map((ch) => {
-                        const active = regHolidayChannels.includes(ch.id);
-                        return (
-                          <button
-                            key={ch.id}
-                            type="button"
-                            onClick={() =>
-                              setRegHolidayChannels((prev) =>
-                                prev.includes(ch.id) ? prev.filter((x) => x !== ch.id) : [...prev, ch.id]
-                              )
-                            }
-                            className={`px-2.5 py-1 rounded-lg text-[11px] font-bold border transition-all cursor-pointer flex items-center gap-1 ${
-                              active
-                                ? 'bg-emerald-600 text-white border-emerald-700 shadow-xs'
-                                : 'bg-white text-slate-600 border-slate-200 hover:border-slate-300'
-                            }`}
-                          >
-                            {active && <CheckCircle2 className="w-3 h-3" />}
-                            <span>{ch.label}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Avatar Picker */}
-                  <div className="space-y-2">
-                    <label className="block text-xs font-bold text-slate-700">
-                      Choose Profile Avatar
-                    </label>
-                    <div className="flex flex-wrap items-center gap-3">
-                      {AVATAR_OPTIONS.map((imgUrl, i) => (
-                        <button
-                          key={i}
-                          type="button"
-                          onClick={() => setRegAvatar(imgUrl)}
-                          className={`relative rounded-xl overflow-hidden border-2 transition-all cursor-pointer ${
-                            regAvatar === imgUrl
-                              ? 'border-emerald-600 ring-2 ring-emerald-500/30 scale-105'
-                              : 'border-slate-200 hover:border-slate-400'
-                          }`}
-                        >
-                          <img src={imgUrl} alt={`Avatar ${i + 1}`} className="w-10 h-10 object-cover" />
-                          {regAvatar === imgUrl && (
-                            <span className="absolute bottom-0 right-0 bg-emerald-600 text-white p-0.5 rounded-tl">
-                              <CheckCircle2 className="w-2.5 h-2.5" />
-                            </span>
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Banking Details / Payout Information Lifecycle Manager (Only for Payout Roles: Owner, Nanny, Driver) */}
                   {regCategoryId !== 'guest' && (
                     <div className="space-y-2">
@@ -1843,55 +1710,7 @@ export const AuthPage: React.FC<AuthPageProps> = ({
             </div>
           </div>
 
-          {/* RIGHT COLUMN: OFFICIAL DOCUMENTATION & PDF MANUAL CARD */}
-          <div className="lg:col-span-3 lg:sticky lg:top-24 order-3 lg:order-3">
-            <div className="bg-slate-900 text-white rounded-2xl p-5 border border-slate-800 shadow-md space-y-4">
-              <div className="space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-800 text-slate-300 border border-slate-700">
-                    <BookOpen className="w-3 h-3" />
-                    Documentation &amp; PDF Manual
-                  </span>
-                </div>
-                <p className="text-[10px] font-bold text-slate-400">
-                  User Experience Guide • Guests &amp; Hosts
-                </p>
-                <h2 className="text-sm sm:text-base font-bold text-white flex items-start gap-2 pt-0.5">
-                  <FileText className="w-4 h-4 text-slate-300 shrink-0 mt-1" />
-                  <span>Platform &amp; User Experience Guide (PDF)</span>
-                </h2>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  Platform documentation covering Account Registration, Stays Booking, Keyless Self Check-In, Virtual Holiday Wallet, Nanny &amp; Shuttle Concierge, and Kiosk access.
-                </p>
-              </div>
 
-              <div className="flex flex-col gap-2 pt-1">
-                <button
-                  id="logon-download-user-guide-pdf-btn"
-                  type="button"
-                  onClick={() => {
-                    downloadUserGuidePdf();
-                    setPdfDownloadedToast(true);
-                    setTimeout(() => setPdfDownloadedToast(false), 4000);
-                  }}
-                  className="w-full px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-1.5 border border-slate-700 cursor-pointer transition-all"
-                >
-                  <Download className="w-4 h-4 shrink-0" />
-                  <span>{pdfDownloadedToast ? '✓ Guide PDF Downloaded' : 'Download User Guide (.PDF)'}</span>
-                </button>
-
-                <button
-                  id="logon-open-user-guide-modal-btn"
-                  type="button"
-                  onClick={() => setIsUserGuideOpen(true)}
-                  className="w-full px-4 py-2 bg-slate-950 hover:bg-slate-800 text-slate-300 border border-slate-800 font-medium rounded-xl text-xs flex items-center justify-center gap-1.5 cursor-pointer transition-all"
-                >
-                  <BookOpen className="w-3.5 h-3.5 shrink-0" />
-                  <span>Interactive Guide</span>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
         {/* Managing Profile Bank Accounts Modal */}
         {managingProfileBankAccounts && (

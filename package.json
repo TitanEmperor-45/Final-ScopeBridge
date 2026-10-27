@@ -7,7 +7,7 @@
     "dev": "NODE_ENV=development tsx server.ts",
     "build": "tsx scripts/build-production.ts",
     "build:prod": "tsx scripts/build-production.ts",
-    "start": "node -e \"import fs from 'fs'; const entry = fs.existsSync('./server.js') ? './server.js' : fs.existsSync('./dist/server.js') ? './dist/server.js' : './server.ts'; import(entry);\"",
+    "start": "node server.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit"

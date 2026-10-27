@@ -827,6 +827,36 @@
     ],
     "bookings": [
       {
+        "id": "BK-7178",
+        "propertyId": "prop-1790625738410",
+        "propertyTitle": "Rivonia Laxe",
+        "roomId": "Rivonia Laxe 1",
+        "roomName": "Rivonia Laxe 1 (Executive Cottage)",
+        "guestName": "Kenny Weeder",
+        "guestEmail": "kenny.weeder71@gmail.com",
+        "guestPhone": "+27 69 497 7018",
+        "checkInDate": "2026-11-05",
+        "checkOutDate": "2026-11-08",
+        "nights": 3,
+        "guestsCount": 2,
+        "totalAmount": 2160,
+        "paymentStatus": "paid",
+        "paymentMethod": "ozow_instant_eft",
+        "channel": "direct",
+        "syncedChannels": [
+          "direct",
+          "airbnb",
+          "booking_com",
+          "lekkeslaap",
+          "expedia"
+        ],
+        "status": "confirmed",
+        "doorCode": "4819#",
+        "wifiPassword": "Solar_2026",
+        "createdAt": "2026-10-21T10:08:46.172Z",
+        "updatedAt": "2026-10-21T10:08:46.311Z"
+      },
+      {
         "id": "BK-TEST-CHANNEX-01",
         "propertyId": "UNIT-RL",
         "guestName": "Matsapa Test",
@@ -2888,7 +2918,7 @@
       }
     ]
   },
-  "updatedAt": "2026-10-18T13:55:11.207Z",
+  "updatedAt": "2026-10-21T10:08:46.335Z",
   "productionOptimizedAt": "2026-09-26T06:52:10.087Z",
   "dbUser": "SYSDBA",
   "dbAuthStatus": "AUTHENTICATED_SYSDBA",
